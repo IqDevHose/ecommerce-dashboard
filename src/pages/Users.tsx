@@ -1,6 +1,6 @@
 import React from "react";
-import { DataTable } from "./components/DataTable"; // Adjust relative path
-import PageTitle from "./components/PageTitle"; // Adjust relative path
+import { DataTable } from "../components/DataTable"; // Adjust relative path
+import PageTitle from "../components/PageTitle"; // Adjust relative path
 import { ColumnDef } from "@tanstack/react-table"; // Ensure you're using @tanstack/react-table in your project
 
 type Payment = {
@@ -27,20 +27,20 @@ const columns: ColumnDef<Payment>[] = [
           <p>{row.getValue("name")}</p>
         </div>
       );
-    }
+    },
   },
   {
     accessorKey: "email",
-    header: "Email"
+    header: "Email",
   },
   {
     accessorKey: "lastOrder",
-    header: "Last Order"
+    header: "Last Order",
   },
   {
     accessorKey: "method",
-    header: "Method"
-  }
+    header: "Method",
+  },
 ];
 
 const data: Payment[] = [
@@ -48,92 +48,92 @@ const data: Payment[] = [
     name: "John Doe",
     email: "john@example.com",
     lastOrder: "2023-01-01",
-    method: "Credit Card"
+    method: "Credit Card",
   },
   {
     name: "Alice Smith",
     email: "alice@example.com",
     lastOrder: "2023-02-15",
-    method: "PayPal"
+    method: "PayPal",
   },
   {
     name: "Bob Johnson",
     email: "bob@example.com",
     lastOrder: "2023-03-20",
-    method: "Stripe"
+    method: "Stripe",
   },
   {
     name: "Emma Brown",
     email: "emma@example.com",
     lastOrder: "2023-04-10",
-    method: "Venmo"
+    method: "Venmo",
   },
   {
     name: "Michael Davis",
     email: "michael@example.com",
     lastOrder: "2023-05-05",
-    method: "Cash"
+    method: "Cash",
   },
   {
     name: "Sophia Wilson",
     email: "sophia@example.com",
     lastOrder: "2023-06-18",
-    method: "Bank Transfer"
+    method: "Bank Transfer",
   },
   {
     name: "Liam Garcia",
     email: "liam@example.com",
     lastOrder: "2023-07-22",
-    method: "Payoneer"
+    method: "Payoneer",
   },
   {
     name: "Olivia Martinez",
     email: "olivia@example.com",
     lastOrder: "2023-08-30",
-    method: "Apple Pay"
+    method: "Apple Pay",
   },
   {
     name: "Noah Rodriguez",
     email: "noah@example.com",
     lastOrder: "2023-09-12",
-    method: "Google Pay"
+    method: "Google Pay",
   },
   {
     name: "Ava Lopez",
     email: "ava@example.com",
     lastOrder: "2023-10-25",
-    method: "Cryptocurrency"
+    method: "Cryptocurrency",
   },
   {
     name: "Elijah Hernandez",
     email: "elijah@example.com",
     lastOrder: "2023-11-05",
-    method: "Alipay"
+    method: "Alipay",
   },
   {
     name: "Mia Gonzalez",
     email: "mia@example.com",
     lastOrder: "2023-12-08",
-    method: "WeChat Pay"
+    method: "WeChat Pay",
   },
   {
     name: "James Perez",
     email: "james@example.com",
     lastOrder: "2024-01-18",
-    method: "Square Cash"
+    method: "Square Cash",
   },
   {
     name: "Charlotte Carter",
     email: "charlotte@example.com",
     lastOrder: "2024-02-22",
-    method: "Zelle"
+    method: "Zelle",
   },
   {
     name: "Benjamin Taylor",
     email: "benjamin@example.com",
     lastOrder: "2024-03-30",
-    method: "Stripe"
-  }
+    method: "Stripe",
+  },
 ];
 
 export default function UsersPage() {

@@ -1,62 +1,62 @@
-import BarChart from "./components/BarChart";
-import PageTitle from "./components/PageTitle";
-import Card, { CardContent, CardProps } from "./components/Card";
+import BarChart from "../components/BarChart";
+import PageTitle from "../components/PageTitle";
+import Card, { CardContent, CardProps } from "../components/card";
 import { Activity, CreditCard, DollarSign, Users } from "lucide-react";
-import SalesCard, { SalesProps } from "./components/SalesCard";
+import SalesCard, { SalesProps } from "../components/SalesCard";
 
 const cardData = [
   {
     label: "Total Revenue",
     amount: "$45,231.89",
     description: "+20.1% from last month",
-    icon: DollarSign
+    icon: DollarSign,
   },
   {
     label: "Subscription",
     amount: "+2350",
     description: "+180.1% from last month",
-    icon: Users
+    icon: Users,
   },
   {
     label: "Sales",
     amount: "+12,234",
     description: "+19% from last month",
-    icon: CreditCard
+    icon: CreditCard,
   },
   {
     label: "Active Now",
     amount: "+573",
     description: "+201 from last month",
-    icon: Activity
-  }
+    icon: Activity,
+  },
 ];
 
 const userSalesData = [
   {
     name: "Olivia Martin",
     email: "olivia.martin@email.com",
-    salesAmount: "+$1,999.00"
+    salesAmount: "+$1,999.00",
   },
   {
     name: "Jackson Lee",
     email: "jackson.lee@email.com",
-    salesAmount: "+$1,999.00"
+    salesAmount: "+$1,999.00",
   },
   {
     name: "Isabella Nguyen",
     email: "isabella.nguyen@email.com",
-    salesAmount: "+$39.00"
+    salesAmount: "+$39.00",
   },
   {
     name: "William Kim",
     email: "will@email.com",
-    salesAmount: "+$299.00"
+    salesAmount: "+$299.00",
   },
   {
     name: "Sofia Davis",
     email: "sofia.davis@email.com",
-    salesAmount: "+$39.00"
-  }
+    salesAmount: "+$39.00",
+  },
 ];
 
 export default function Home() {
