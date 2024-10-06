@@ -1,4 +1,3 @@
-import React from "react";
 import { DataTable } from "../components/DataTable"; // Adjust relative path
 import PageTitle from "../components/PageTitle"; // Adjust relative path
 import { ColumnDef } from "@tanstack/react-table"; // Ensure you're using @tanstack/react-table in your project

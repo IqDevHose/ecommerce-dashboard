@@ -10,14 +10,12 @@ function App() {
   return (
     <div className="flex">
       <Sidebar />
-      <main className="flex-grow p-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/users" element={<Users />} />
-        </Routes>
-      </main>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/users" element={<Users />} />
+      </Routes>
     </div>
   );
 }
