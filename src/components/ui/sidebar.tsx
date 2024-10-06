@@ -6,6 +6,7 @@ import {
   Settings,
   ShoppingCart,
   UsersRound,
+  ListCheck,
 } from "lucide-react";
 import { Button } from "./button";
 import { useWindowWidth } from "@react-hook/window-size";
@@ -51,9 +52,15 @@ export default function Sidebar({}: Props) {
             variant: "ghost",
           },
           {
+            title: "Products",
+            href: "/products", // Adjust routing accordingly
+            icon: ShoppingCart,
+            variant: "ghost",
+          },
+          {
             title: "Orders",
             href: "/orders", // Adjust routing accordingly
-            icon: ShoppingCart,
+            icon: ListCheck,
             variant: "ghost",
           },
           {
