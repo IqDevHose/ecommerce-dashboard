@@ -1,5 +1,5 @@
-import { DataTable } from "../components/DataTable"; // Adjust relative path
-import PageTitle from "../components/PageTitle"; // Adjust relative path
+import { DataTable } from "@/components/DataTable";
+import PageTitle from "@/components/PageTitle";
 import { ColumnDef } from "@tanstack/react-table"; // Ensure you're using @tanstack/react-table in your project
 
 // Define the Product type
@@ -20,9 +20,7 @@ const columns: ColumnDef<Product>[] = [
         <div className="flex gap-2 items-center">
           <img
             className="h-10 w-10"
-            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${row.getValue(
-              "name"
-            )}`}
+            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${row.getValue("name")}`}
             alt="product-image"
           />
           <p className="">{row.getValue("name")}</p>

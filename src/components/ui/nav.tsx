@@ -1,12 +1,10 @@
-import React from "react";
 import { LucideIcon } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { buttonVariants } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { NavLink } from "react-router-dom";
 
 interface NavProps {
-  isCollapsed: boolean;
   links: {
     title: string;
     label?: string;
@@ -16,62 +14,29 @@ interface NavProps {
   }[];
 }
 
-export function Nav({ links, isCollapsed }: NavProps) {
-  // You will need to replace usePathname with a suitable logic for getting the current path in a React app
-  const pathName = window.location.pathname; // Replace Next.js' usePathname hook with window.location.pathname
-
+export function Nav({ links }: NavProps) {
   return (
     <TooltipProvider>
       <div
-        data-collapsed={isCollapsed}
-        className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
+        className="group flex flex-col gap-4 py-2 "
       >
-        <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
+        <nav className="grid gap-1 px-2">
           {links.map((link, index) =>
-            isCollapsed ? (
-              <Tooltip key={index} delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <a
-                    href={link.href}
-                    className={cn(
-                      buttonVariants({
-                        variant: link.href === pathName ? "default" : "ghost",
-                        size: "icon",
-                      }),
-                      "h-9 w-9",
-                      link.variant === "default" &&
-                        "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                    )}
-                  >
-                    <link.icon className="h-4 w-4" />
-                    <span className="sr-only">{link.title}</span>
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  className="flex items-center gap-4"
-                >
-                  {link.title}
-                  {link.label && (
-                    <span className="ml-auto text-muted-foreground">
-                      {link.label}
-                    </span>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <a
+             (
+              <NavLink
                 key={index}
-                href={link.href}
-                className={cn(
-                  buttonVariants({
-                    variant: link.href === pathName ? "default" : "ghost",
-                    size: "sm",
-                  }),
-                  link.variant === "default" &&
-                    "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
-                  "justify-start"
-                )}
+                to={link.href}
+                className={({ isActive }) =>
+                  cn(
+                    buttonVariants({
+                      variant: isActive ? "default" : "ghost",
+                      size: "sm",
+                    }),
+                    link.variant === "default" &&
+                      "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
+                    "justify-start"
+                  )
+                }
               >
                 <link.icon className="mr-2 h-4 w-4" />
                 {link.title}
@@ -86,7 +51,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                     {link.label}
                   </span>
                 )}
-              </a>
+              </NavLink>
             )
           )}
         </nav>

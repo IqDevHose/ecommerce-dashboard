@@ -1,7 +1,7 @@
-import { DataTable } from "../components/DataTable";
-import PageTitle from "../components/PageTitle";
+
 import { ColumnDef } from "@tanstack/react-table";
-import { cn } from "../lib/utils";
+import PageTitle from "@/components/PageTitle";
+import { DataTable } from "@/components/DataTable";
 
 type Setting = {
   category: string;
@@ -38,7 +38,7 @@ const data: Setting[] = [
   },
 ];
 
-export default function SettingsPage() {
+export default function Settings() {
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Settings" />

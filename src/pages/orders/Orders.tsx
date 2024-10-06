@@ -1,7 +1,8 @@
-import { DataTable } from "../components/DataTable"; // Adjust the path to your components
-import PageTitle from "../components/PageTitle"; // Adjust the path to your components
-import { ColumnDef } from "@tanstack/react-table"; // Ensure @tanstack/react-table is installed
-import { cn } from "../lib/utils"; // Adjust the path to your utility functions
+import { DataTable } from "@/components/DataTable";
+import PageTitle from "@/components/PageTitle";
+import { cn } from "@/lib/utils";
+import { ColumnDef } from "@tanstack/react-table";
+
 
 type Payment = {
   order: string;
@@ -135,7 +136,7 @@ const data: Payment[] = [
   },
 ];
 
-export default function OrdersPage() {
+export default function Orders() {
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Orders" />

@@ -1,8 +1,8 @@
-import BarChart from "../components/BarChart";
-import PageTitle from "../components/PageTitle";
-import Card, { CardContent, CardProps } from "../components/card";
 import { Activity, CreditCard, DollarSign, Users } from "lucide-react";
-import SalesCard, { SalesProps } from "../components/SalesCard";
+import BarChart from "@/components/BarChart";
+import SalesCard from "@/components/SalesCard";
+import Card, { CardContent } from "@/components/card";
+import PageTitle from "@/components/PageTitle";
 
 const cardData = [
   {

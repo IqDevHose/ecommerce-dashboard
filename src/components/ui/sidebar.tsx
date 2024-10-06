@@ -1,46 +1,21 @@
-import React from "react";
 import { Nav } from "./nav";
 import {
-  ChevronRight,
-  ChevronLeft,
   LayoutDashboard,
   Settings,
   ShoppingCart,
   UsersRound,
   ListCheck,
 } from "lucide-react";
-import { Button } from "./button";
-import { useWindowWidth } from "@react-hook/window-size";
 
 type Props = {};
 
 export default function Sidebar({}: Props) {
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
-
-  const onlyWidth = useWindowWidth();
-  const mobileWidth = onlyWidth < 768;
-
-  function toggleSidebar() {
-    setIsCollapsed(!isCollapsed);
-  }
 
   return (
     <div
-      className={`sticky top-0 border-r px-3 pb-10 pt-24 h-screen transition-all duration-300 `}
+      className={`sticky top-0 border-r hidden md:block w-0 md:w-3/12 pb-10 pt-24 h-screen transition-all duration-300 `}
     >
-      {!mobileWidth && (
-        <div className="absolute right-[-20px] top-7">
-          <Button
-            variant="secondary"
-            className="rounded-full p-2"
-            onClick={toggleSidebar}
-          >
-            {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
-          </Button>
-        </div>
-      )}
       <Nav
-        isCollapsed={mobileWidth ? true : isCollapsed}
         links={[
           {
             title: "Dashboard",
