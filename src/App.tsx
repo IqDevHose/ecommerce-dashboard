@@ -9,7 +9,7 @@ import Sidebar from "../src/components/ui/sidebar"; // Ensure Sidebar is correct
 
 function App() {
   return (
-    <div className="flex">
+    <div className="flex h-[100vh]">
       <Sidebar />
       <Routes>
         <Route path="/" element={<Home />} />
