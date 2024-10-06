@@ -25,9 +25,7 @@ export default function Sidebar({}: Props) {
 
   return (
     <div
-      className={`sticky top-0 border-r px-3 pb-10 pt-24 h-screen transition-all duration-300 ${
-        isCollapsed ? "min-w-[60px]" : "min-w-[200px]"
-      }`}
+      className={`sticky top-0 border-r px-3 pb-10 pt-24 h-screen transition-all duration-300 `}
     >
       {!mobileWidth && (
         <div className="absolute right-[-20px] top-7">
