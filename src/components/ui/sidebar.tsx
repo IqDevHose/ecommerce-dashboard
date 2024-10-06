@@ -2,6 +2,7 @@ import React from "react";
 import { Nav } from "./nav";
 import {
   ChevronRight,
+  ChevronLeft,
   LayoutDashboard,
   Settings,
   ShoppingCart,
@@ -23,7 +24,11 @@ export default function Sidebar({}: Props) {
   }
 
   return (
-    <div className="relative min-w-[80px] border-r px-3 pb-10 pt-24">
+    <div
+      className={`sticky top-0 border-r px-3 pb-10 pt-24 h-screen transition-all duration-300 ${
+        isCollapsed ? "min-w-[60px]" : "min-w-[200px]"
+      }`}
+    >
       {!mobileWidth && (
         <div className="absolute right-[-20px] top-7">
           <Button
@@ -31,7 +36,7 @@ export default function Sidebar({}: Props) {
             className="rounded-full p-2"
             onClick={toggleSidebar}
           >
-            <ChevronRight />
+            {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
           </Button>
         </div>
       )}
