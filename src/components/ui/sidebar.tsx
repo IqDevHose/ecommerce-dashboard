@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Nav } from "./nav";
 import {
   LayoutDashboard,
@@ -5,50 +6,108 @@ import {
   ShoppingCart,
   UsersRound,
   ListCheck,
+  Menu,
+  X,
 } from "lucide-react";
 
 type Props = {};
 
 export default function Sidebar({}: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <div
-      className={`sticky top-0 border-r hidden md:block w-0 md:w-3/12 pb-10 pt-24 h-screen transition-all duration-300 `}
-    >
-      <Nav
-        links={[
-          {
-            title: "Dashboard",
-            href: "/", // You might need to replace this with React Router's Link if you are using it
-            icon: LayoutDashboard,
-            variant: "default",
-          },
-          {
-            title: "Users",
-            href: "/users", // React Router's Link may be needed here
-            icon: UsersRound,
-            variant: "ghost",
-          },
-          {
-            title: "Products",
-            href: "/products", // Adjust routing accordingly
-            icon: ShoppingCart,
-            variant: "ghost",
-          },
-          {
-            title: "Orders",
-            href: "/orders", // Adjust routing accordingly
-            icon: ListCheck,
-            variant: "ghost",
-          },
-          {
-            title: "Settings",
-            href: "/settings", // Adjust if necessary
-            icon: Settings,
-            variant: "ghost",
-          },
-        ]}
-      />
+    <div className="h-screen border-r md:w-2/12 ">
+      {/* Hamburger Button */}
+      <button
+        className="md:hidden p-4 focus:outline-none pt-11 "
+        onClick={toggleMenu}
+      >
+        {isOpen ? <X /> : <Menu />}
+      </button>
+
+      {/* Big screen */}
+      <div
+        className={`sticky top-0  hidden md:block pb-10 pt-24 h-screen transition-all duration-300`}
+      >
+        <Nav
+          links={[
+            {
+              title: "Dashboard",
+              href: "/",
+              icon: LayoutDashboard,
+              variant: "default",
+            },
+            {
+              title: "Users",
+              href: "/users",
+              icon: UsersRound,
+              variant: "ghost",
+            },
+            {
+              title: "Products",
+              href: "/products",
+              icon: ShoppingCart,
+              variant: "ghost",
+            },
+            {
+              title: "Orders",
+              href: "/orders",
+              icon: ListCheck,
+              variant: "ghost",
+            },
+            {
+              title: "Settings",
+              href: "/settings",
+              icon: Settings,
+              variant: "ghost",
+            },
+          ]}
+        />
+      </div>
+
+      {/* Small Screens */}
+      {isOpen && (
+        <div className="md:hidden bg-white shadow-md h-screen w-40 overflow-y-auto">
+          <Nav
+            links={[
+              {
+                title: "Dashboard",
+                href: "/",
+                icon: LayoutDashboard,
+                variant: "default",
+              },
+              {
+                title: "Users",
+                href: "/users",
+                icon: UsersRound,
+                variant: "ghost",
+              },
+              {
+                title: "Products",
+                href: "/products",
+                icon: ShoppingCart,
+                variant: "ghost",
+              },
+              {
+                title: "Orders",
+                href: "/orders",
+                icon: ListCheck,
+                variant: "ghost",
+              },
+              {
+                title: "Settings",
+                href: "/settings",
+                icon: Settings,
+                variant: "ghost",
+              },
+            ]}
+          />
+        </div>
+      )}
     </div>
   );
 }
