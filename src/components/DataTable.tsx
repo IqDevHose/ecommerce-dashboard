@@ -16,6 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "./ui/button";
+import { SquarePen } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,9 +47,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -68,6 +70,12 @@ export function DataTable<TData, TValue>({
                       )}
                     </TableCell>
                   ))}
+                  <div>
+                    <Link to={ ""}>
+                      <SquarePen />
+                    </Link>
+
+                  </div>
                 </TableRow>
               ))
             ) : (
