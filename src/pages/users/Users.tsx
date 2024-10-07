@@ -7,11 +7,52 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 type Payment = {
+  id: string; // Add the id field
   name: string;
   email: string;
   lastOrder: string;
   method: string;
 };
+
+const data: Payment[] = [
+  {
+    id: "1", // Unique ID
+    name: "John Doe",
+    email: "john@example.com",
+    lastOrder: "2023-01-01",
+    method: "Credit Card",
+  },
+  {
+    id: "2",
+    name: "Alice Smith",
+    email: "alice@example.com",
+    lastOrder: "2023-02-15",
+    method: "PayPal",
+  },
+  {
+    id: "3",
+    name: "Bob Johnson",
+    email: "bob@example.com",
+    lastOrder: "2023-03-20",
+    method: "Stripe",
+  },
+  // Add id for other users
+  {
+    id: "4",
+    name: "Emma Brown",
+    email: "emma@example.com",
+    lastOrder: "2023-04-10",
+    method: "Venmo",
+  },
+  {
+    id: "5",
+    name: "Michael Davis",
+    email: "michael@example.com",
+    lastOrder: "2023-05-05",
+    method: "Cash",
+  },
+  // Add ids for the rest of the users...
+];
 
 const columns: ColumnDef<Payment>[] = [
   {
@@ -46,114 +87,36 @@ const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-const data: Payment[] = [
-  {
-    name: "John Doe",
-    email: "john@example.com",
-    lastOrder: "2023-01-01",
-    method: "Credit Card",
-  },
-  {
-    name: "Alice Smith",
-    email: "alice@example.com",
-    lastOrder: "2023-02-15",
-    method: "PayPal",
-  },
-  {
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    lastOrder: "2023-03-20",
-    method: "Stripe",
-  },
-  {
-    name: "Emma Brown",
-    email: "emma@example.com",
-    lastOrder: "2023-04-10",
-    method: "Venmo",
-  },
-  {
-    name: "Michael Davis",
-    email: "michael@example.com",
-    lastOrder: "2023-05-05",
-    method: "Cash",
-  },
-  {
-    name: "Sophia Wilson",
-    email: "sophia@example.com",
-    lastOrder: "2023-06-18",
-    method: "Bank Transfer",
-  },
-  {
-    name: "Liam Garcia",
-    email: "liam@example.com",
-    lastOrder: "2023-07-22",
-    method: "Payoneer",
-  },
-  {
-    name: "Olivia Martinez",
-    email: "olivia@example.com",
-    lastOrder: "2023-08-30",
-    method: "Apple Pay",
-  },
-  {
-    name: "Noah Rodriguez",
-    email: "noah@example.com",
-    lastOrder: "2023-09-12",
-    method: "Google Pay",
-  },
-  {
-    name: "Ava Lopez",
-    email: "ava@example.com",
-    lastOrder: "2023-10-25",
-    method: "Cryptocurrency",
-  },
-  {
-    name: "Elijah Hernandez",
-    email: "elijah@example.com",
-    lastOrder: "2023-11-05",
-    method: "Alipay",
-  },
-  {
-    name: "Mia Gonzalez",
-    email: "mia@example.com",
-    lastOrder: "2023-12-08",
-    method: "WeChat Pay",
-  },
-  {
-    name: "James Perez",
-    email: "james@example.com",
-    lastOrder: "2024-01-18",
-    method: "Square Cash",
-  },
-  {
-    name: "Charlotte Carter",
-    email: "charlotte@example.com",
-    lastOrder: "2024-02-22",
-    method: "Zelle",
-  },
-  {
-    name: "Benjamin Taylor",
-    email: "benjamin@example.com",
-    lastOrder: "2024-03-30",
-    method: "Stripe",
-  },
-];
 
 export default function UsersPage() {
-  const [userSearch, setUserSearch] = useState("")
+  const [userSearch, setUserSearch] = useState("");
 
+  const handleDelete = (userId: string) => {
+    console.log("Delete user with ID:", userId);
+    // Add delete logic here
+  };
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Users" />
-      <Options haveSearch={true} searchValue={userSearch} setSearchValue={setUserSearch} buttons={[
+      <Options
+        haveSearch={true}
+        searchValue={userSearch}
+        setSearchValue={setUserSearch}
+        buttons={[
           <Link to={"/new-user"}>
-          <Button variant={"outline"} className="">
-            Add User
-          </Button>
-          </Link>
-      ]} />
-      <DataTable columns={columns} data={data} />
+            <Button variant={"outline"} className="">
+              Add User
+            </Button>
+          </Link>,
+        ]}
+      />
+      <DataTable
+        columns={columns}
+        data={data}
+        editLink={"/edit-user"} // Provide the base link for editing users
+        handleDelete={handleDelete} // Provide the delete handler function
+      />
     </div>
   );
 }

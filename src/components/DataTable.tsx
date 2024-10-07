@@ -16,17 +16,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "./ui/button";
-import { SquarePen } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  editLink: string; // Add prop for edit link
+  handleDelete: (id: string) => void; // Add prop for delete action
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  editLink, // Add editLink as prop
+  handleDelete, // Add handleDelete as prop
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -47,9 +51,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -64,26 +68,23 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
-                  <div>
-                    <Link to={ ""}>
-                      <SquarePen />
-                    </Link>
 
-                  </div>
+                  <td className="flex gap-2">
+                    <Link to={editLink}>
+                      <SquarePen className="text-blue-600" />
+                    </Link>
+                    <Button onClick={() => handleDelete(row?.original?.id)}>
+                      <Trash2 className="text-red-600" />
+                    </Button>
+                  </td>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
