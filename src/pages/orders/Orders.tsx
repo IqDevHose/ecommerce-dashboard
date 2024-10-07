@@ -1,12 +1,14 @@
 import { DataTable } from "@/components/DataTable";
 import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
+import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import axiosInstance from "@/utils/AxiosInstance";
+import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
 
 type Payment = {
   id: string;
@@ -117,6 +119,40 @@ const data: Payment[] = [
 export default function Orders() {
   const [userSearch, setUserSearch] = useState("");
 
+  // query
+  const {
+    data: order,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["order"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/order");
+      return res.data;
+    },
+  });
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        <Spinner size="md" />
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        Error loading users
+      </div>
+    );
+
+  // Search
+  const filteredData = order?.filter(
+    (order: Payment) =>
+      order?.order.toLowerCase().includes(userSearch.toLowerCase()) ||
+      order?.status.toLowerCase().includes(userSearch.toLowerCase()) ||
+      order?.method.toLowerCase().includes(userSearch.toLowerCase())
+  );
+
   const handleDelete = (orderId: string) => {
     console.log("Delete user with ID:", orderId);
   };
@@ -130,14 +166,18 @@ export default function Orders() {
         setSearchValue={setUserSearch}
         buttons={[
           <Link to={"/new-order"}>
-            <Button
-             variant={"outline"} className="">
-              Add Order 
+            <Button variant={"outline"} className="">
+              Add Order
             </Button>
           </Link>,
         ]}
       />
-      <DataTable editLink="/edit-order" handleDelete={handleDelete} columns={columns} data={data} />
+      <DataTable
+        editLink="/edit-order"
+        handleDelete={handleDelete}
+        columns={columns}
+        data={filteredData}
+      />
     </div>
   );
 }
