@@ -140,20 +140,33 @@ const data: Payment[] = [
 ];
 
 export default function UsersPage() {
-  const [userSearch, setUserSearch] = useState("")
+  const [userSearch, setUserSearch] = useState("");
 
+  // Filter the data based on the search input
+  const filteredData = data.filter(
+    (user) =>
+      user.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+      user.email.toLowerCase().includes(userSearch.toLowerCase()) ||
+      user.method.toLowerCase().includes(userSearch.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Users" />
-      <Options haveSearch={true} searchValue={userSearch} setSearchValue={setUserSearch} buttons={[
-          <Link to={"/new-user"}>
-          <Button variant={"outline"} className="">
-            Add User
-          </Button>
-          </Link>
-      ]} />
-      <DataTable columns={columns} data={data} />
+      <Options
+        haveSearch={true}
+        searchValue={userSearch}
+        setSearchValue={setUserSearch}
+        buttons={[
+          <Link to={"/new-user"} key="add-user">
+            <Button variant={"outline"} className="">
+              Add User
+            </Button>
+          </Link>,
+        ]}
+      />
+      {/* Pass the filtered data to the DataTable */}
+      <DataTable columns={columns} data={filteredData} />
     </div>
   );
 }
