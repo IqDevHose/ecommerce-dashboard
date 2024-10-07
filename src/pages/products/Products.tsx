@@ -108,10 +108,13 @@ const data: Product[] = [
 
 // Main component for ProductsPage
 export default function ProductsPage() {
+  const handleDelete = (id: any) => {
+    console.log("delete: ", id);
+  }
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Products" />
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} editLink="/edit-product" handleDelete={handleDelete}/>
     </div>
   );
 }

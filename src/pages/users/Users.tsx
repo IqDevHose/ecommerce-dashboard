@@ -142,6 +142,9 @@ const data: Payment[] = [
 export default function UsersPage() {
   const [userSearch, setUserSearch] = useState("")
 
+  const handleDelete = (id: any) => {
+    console.log("delete: ", id);
+  }
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
@@ -153,7 +156,7 @@ export default function UsersPage() {
           </Button>
           </Link>
       ]} />
-      <DataTable columns={columns} data={data} />
+<DataTable columns={columns} data={data} editLink={"/edit-user"} handleDelete={handleDelete}/>
     </div>
   );
 }

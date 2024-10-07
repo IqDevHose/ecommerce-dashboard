@@ -137,10 +137,13 @@ const data: Payment[] = [
 ];
 
 export default function Orders() {
+  const handleDelete = (id: any) => {
+    console.log("delete: ", id);
+  }
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Orders" />
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} editLink="/edit-order" handleDelete={handleDelete}/>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -16,10 +16,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "./ui/button";
-import { SquarePen } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface DataTableProps<TData, TValue> {
+  editLink: string,
+  handleDelete: (arg: any) => void,
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
@@ -27,6 +29,8 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  editLink,
+  handleDelete
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -34,6 +38,8 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const [cellId, setCellId] = useState<any>("")
 
   return (
     <div>
@@ -62,20 +68,27 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    setCellId(cell.id)
+                    return (<TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </TableCell>
-                  ))}
-                  <div>
-                    <Link to={ ""}>
-                      <SquarePen />
-                    </Link>
+                    </TableCell>)
 
-                  </div>
+                  }
+                  )}
+                  <td className="self-center h-full">
+                    <Link to={editLink}>
+                      <SquarePen className="text-blue-600"/>
+                    </Link>
+                  </td>
+                  <td className="self-center h-full">
+                    <Button onClick={() => handleDelete(cellId)}>
+                      <Trash2 className="text-red-600"/>
+                    </Button>
+                  </td>
                 </TableRow>
               ))
             ) : (
