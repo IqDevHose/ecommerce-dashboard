@@ -1,6 +1,10 @@
 import { DataTable } from "@/components/DataTable";
+import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
+import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table"; // Ensure you're using @tanstack/react-table in your project
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 type Payment = {
   name: string;
@@ -136,9 +140,19 @@ const data: Payment[] = [
 ];
 
 export default function UsersPage() {
+  const [userSearch, setUserSearch] = useState("")
+
+
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Users" />
+      <Options haveSearch={true} searchValue={userSearch} setSearchValue={setUserSearch} buttons={[
+          <Link to={"/new-user"}>
+          <Button variant={"outline"} className="">
+            Add User
+          </Button>
+          </Link>
+      ]} />
       <DataTable columns={columns} data={data} />
     </div>
   );
