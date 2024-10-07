@@ -8,6 +8,8 @@ import ProductsPage from "./pages/products/Products";
 import OrdersPage from "./pages/orders/Orders";
 import Settings from "./pages/settings/Settings";
 import AddUser from "./pages/users/AddUser";
+import AddProduct from "./pages/products/AddProduct";
+import AddOrder from "./pages/orders/AddOrder";
 
 function App() {
   return (
@@ -17,8 +19,13 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
         <Route path="/new-user" element={<AddUser />} />
+
         <Route path="/products" element={<ProductsPage />} />
+        <Route path="/new-product" element={<AddProduct />} />
+
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/new-order" element={<AddOrder />} />
+
         <Route path="/settings" element={<Settings />} />
       </Routes>
     </div>

@@ -1,10 +1,15 @@
 import { DataTable } from "@/components/DataTable";
+import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 
 type Payment = {
+  id: string;
   order: string;
   status: string;
   lastOrder: string;
@@ -45,102 +50,94 @@ const columns: ColumnDef<Payment>[] = [
 
 const data: Payment[] = [
   {
+    id: "1",
     order: "ORD001",
     status: "Pending",
     lastOrder: "2023-01-15",
     method: "Credit Card",
   },
   {
+    id: "2",
     order: "ORD002",
     status: "Processing",
     lastOrder: "2023-02-20",
     method: "PayPal",
   },
   {
+    id: "3",
     order: "ORD003",
     status: "Completed",
     lastOrder: "2023-03-10",
     method: "Stripe",
   },
   {
+    id: "4",
     order: "ORD004",
     status: "Pending",
     lastOrder: "2023-04-05",
     method: "Venmo",
   },
   {
+    id: "5",
     order: "ORD005",
     status: "Completed",
     lastOrder: "2023-05-12",
     method: "Bank Transfer",
   },
   {
+    id: "6",
     order: "ORD006",
     status: "Processing",
     lastOrder: "2023-06-18",
     method: "Apple Pay",
   },
   {
+    id: "7",
     order: "ORD007",
     status: "Completed",
     lastOrder: "2023-07-22",
     method: "Google Pay",
   },
   {
+    id: "8",
     order: "ORD008",
     status: "Pending",
     lastOrder: "2023-08-30",
     method: "Cryptocurrency",
   },
   {
+    id: "9",
     order: "ORD009",
     status: "Processing",
     lastOrder: "2023-09-05",
     method: "Alipay",
   },
-  {
-    order: "ORD010",
-    status: "Completed",
-    lastOrder: "2023-10-18",
-    method: "WeChat Pay",
-  },
-  {
-    order: "ORD011",
-    status: "Pending",
-    lastOrder: "2023-11-25",
-    method: "Square Cash",
-  },
-  {
-    order: "ORD012",
-    status: "Completed",
-    lastOrder: "2023-12-08",
-    method: "Zelle",
-  },
-  {
-    order: "ORD013",
-    status: "Processing",
-    lastOrder: "2024-01-15",
-    method: "Stripe",
-  },
-  {
-    order: "ORD014",
-    status: "Completed",
-    lastOrder: "2024-02-20",
-    method: "PayPal",
-  },
-  {
-    order: "ORD015",
-    status: "Pending",
-    lastOrder: "2024-03-30",
-    method: "Credit Card",
-  },
 ];
 
 export default function Orders() {
+  const [userSearch, setUserSearch] = useState("");
+
+  const handleDelete = (orderId: string) => {
+    console.log("Delete user with ID:", orderId);
+  };
+
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Orders" />
-      <DataTable columns={columns} data={data} />
+      <Options
+        haveSearch={true}
+        searchValue={userSearch}
+        setSearchValue={setUserSearch}
+        buttons={[
+          <Link to={"/new-order"}>
+            <Button
+             variant={"outline"} className="">
+              Add Order 
+            </Button>
+          </Link>,
+        ]}
+      />
+      <DataTable editLink="/edit-order" handleDelete={handleDelete} columns={columns} data={data} />
     </div>
   );
 }

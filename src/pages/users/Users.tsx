@@ -16,7 +16,7 @@ type Payment = {
 
 const data: Payment[] = [
   {
-    id: "1", // Unique ID
+    id: "1",
     name: "John Doe",
     email: "john@example.com",
     lastOrder: "2023-01-01",
@@ -93,7 +93,6 @@ export default function UsersPage() {
 
   const handleDelete = (userId: string) => {
     console.log("Delete user with ID:", userId);
-    // Add delete logic here
   };
 
   return (

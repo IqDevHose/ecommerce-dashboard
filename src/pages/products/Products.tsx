@@ -1,9 +1,14 @@
 import { DataTable } from "@/components/DataTable";
+import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
+import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table"; // Ensure you're using @tanstack/react-table in your project
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 // Define the Product type
 type Product = {
+  id: string;
   name: string;
   category: string;
   price: string;
@@ -45,73 +50,80 @@ const columns: ColumnDef<Product>[] = [
 // Sample data for products
 const data: Product[] = [
   {
+    id: "1",
     name: "Product A",
     category: "Electronics",
     price: "$199.99",
     stock: 120,
   },
   {
+    id: "3",
     name: "Product B",
     category: "Furniture",
     price: "$299.99",
     stock: 85,
   },
   {
+    id: "3",
     name: "Product C",
     category: "Clothing",
     price: "$49.99",
     stock: 200,
   },
   {
+    id: "4",
     name: "Product D",
     category: "Groceries",
     price: "$3.99",
     stock: 500,
   },
   {
+    id: "5",
     name: "Product E",
     category: "Books",
     price: "$15.99",
     stock: 150,
   },
   {
+    id: "6",
     name: "Product F",
     category: "Toys",
     price: "$24.99",
     stock: 300,
   },
   {
+    id: "7",
     name: "Product G",
     category: "Beauty",
     price: "$14.99",
     stock: 75,
   },
-  {
-    name: "Product H",
-    category: "Sports",
-    price: "$89.99",
-    stock: 60,
-  },
-  {
-    name: "Product I",
-    category: "Automotive",
-    price: "$199.99",
-    stock: 45,
-  },
-  {
-    name: "Product J",
-    category: "Garden",
-    price: "$39.99",
-    stock: 100,
-  },
 ];
 
 // Main component for ProductsPage
 export default function ProductsPage() {
+  const [userSearch, setUserSearch] = useState("");
+
+  const handleDelete = (productId: string) => {
+    console.log("Delete user with ID:", productId);
+  };
+
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
       <PageTitle title="Products" />
-      <DataTable columns={columns} data={data} />
+      <Options
+        haveSearch={true}
+        searchValue={userSearch}
+        setSearchValue={setUserSearch}
+        buttons={[
+          <Link to={"/new-product"}>
+            <Button variant={"outline"} className="">
+              Add Product 
+            </Button>
+          </Link>,
+        ]}
+      />
+      <DataTable editLink="/edit-product" handleDelete={handleDelete} columns={columns} data={data} />
     </div>
   );
 }
