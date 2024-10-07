@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/DataTable";
 import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
+import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/AxiosInstance";
 import { useQuery } from "@tanstack/react-query";
@@ -74,16 +75,14 @@ const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-// Handle the deletion of a user
 const handleDelete = (userId: string) => {
   console.log("Delete user with ID:", userId);
-  // Add delete logic here (e.g., make an API request)
 };
 
 export default function UsersPage() {
   const [userSearch, setUserSearch] = useState("");
 
-  // Fetch users with react-query
+  // query
   const {
     data: users,
     isLoading,
@@ -92,15 +91,24 @@ export default function UsersPage() {
     queryKey: ["users"],
     queryFn: async () => {
       const res = await axiosInstance.get("/users");
-      return res.data; // Assume the API returns an array of Payment-type users
+      return res.data;
     },
   });
 
-  // Handle loading and error states
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading users</div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        <Spinner size="md" />
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        Error loading users
+      </div>
+    );
 
-  // Filter users based on the search input
+  // Search
   const filteredData = users?.filter(
     (user: Payment) =>
       user?.name.toLowerCase().includes(userSearch.toLowerCase()) ||

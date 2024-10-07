@@ -1,7 +1,10 @@
 import { DataTable } from "@/components/DataTable";
 import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
+import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
+import axiosInstance from "@/utils/AxiosInstance";
+import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table"; // Ensure you're using @tanstack/react-table in your project
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -25,7 +28,9 @@ const columns: ColumnDef<Product>[] = [
         <div className="flex gap-2 items-center">
           <img
             className="h-10 w-10"
-            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${row.getValue("name")}`}
+            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${row.getValue(
+              "name"
+            )}`}
             alt="product-image"
           />
           <p className="">{row.getValue("name")}</p>
@@ -104,6 +109,40 @@ const data: Product[] = [
 export default function ProductsPage() {
   const [userSearch, setUserSearch] = useState("");
 
+  // query
+  const {
+    data: products,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/products");
+      return res.data;
+    },
+  });
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        <Spinner size="md" />
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        Error loading users
+      </div>
+    );
+
+  // Search
+  const filteredData = products?.filter(
+    (products: Product) =>
+      products?.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+      products?.category.toLowerCase().includes(userSearch.toLowerCase()) ||
+      products?.price.toLowerCase().includes(userSearch.toLowerCase())
+  );
+
   const handleDelete = (productId: string) => {
     console.log("Delete user with ID:", productId);
   };
@@ -118,12 +157,17 @@ export default function ProductsPage() {
         buttons={[
           <Link to={"/new-product"}>
             <Button variant={"outline"} className="">
-              Add Product 
+              Add Product
             </Button>
           </Link>,
         ]}
       />
-      <DataTable editLink="/edit-product" handleDelete={handleDelete} columns={columns} data={data} />
+      <DataTable
+        editLink="/edit-product"
+        handleDelete={handleDelete}
+        columns={columns}
+        data={filteredData}
+      />
     </div>
   );
 }
