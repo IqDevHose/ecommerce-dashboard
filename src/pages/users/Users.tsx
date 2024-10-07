@@ -87,13 +87,19 @@ const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-
 export default function UsersPage() {
   const [userSearch, setUserSearch] = useState("");
 
   const handleDelete = (userId: string) => {
     console.log("Delete user with ID:", userId);
   };
+  // Filter the data based on the search input
+  const filteredData = data.filter(
+    (user) =>
+      user.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+      user.email.toLowerCase().includes(userSearch.toLowerCase()) ||
+      user.method.toLowerCase().includes(userSearch.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col p-10 gap-5 w-full">
@@ -112,7 +118,7 @@ export default function UsersPage() {
       />
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredData}
         editLink={"/edit-user"} // Provide the base link for editing users
         handleDelete={handleDelete} // Provide the delete handler function
       />
