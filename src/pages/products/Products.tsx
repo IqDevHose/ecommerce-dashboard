@@ -137,10 +137,9 @@ export default function ProductsPage() {
 
   // Search
   const filteredData = products?.filter(
-    (products: Product) =>
-      products?.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-      products?.category.toLowerCase().includes(userSearch.toLowerCase()) ||
-      products?.price.toLowerCase().includes(userSearch.toLowerCase())
+    (products: Product) => products?.name?.includes(userSearch)
+    // products?.category?.includes(userSearch)
+    // products?.price?.includes(userSearch)
   );
 
   const handleDelete = (productId: string) => {

@@ -148,9 +148,9 @@ export default function Orders() {
   // Search
   const filteredData = order?.filter(
     (order: Payment) =>
-      order?.order.toLowerCase().includes(userSearch.toLowerCase()) ||
-      order?.status.toLowerCase().includes(userSearch.toLowerCase()) ||
-      order?.method.toLowerCase().includes(userSearch.toLowerCase())
+      order?.order.includes(userSearch) ||
+      order?.status.includes(userSearch) ||
+      order?.method.includes(userSearch)
   );
 
   const handleDelete = (orderId: string) => {

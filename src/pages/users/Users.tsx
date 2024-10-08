@@ -111,9 +111,9 @@ export default function UsersPage() {
   // Search
   const filteredData = users?.filter(
     (user: Payment) =>
-      user?.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-      user?.email.toLowerCase().includes(userSearch.toLowerCase()) ||
-      user?.method.toLowerCase().includes(userSearch.toLowerCase())
+      user?.name?.includes(userSearch) ||
+      user?.email?.includes(userSearch) ||
+      user?.method?.includes(userSearch)
   );
 
   return (
