@@ -63,7 +63,7 @@ const EditUser = () => {
     <div className="p-10 flex flex-col gap-5 w-full">
       <PageTitle title="Edit User" />
 
-      {error && <div className="text-red-500">{error}</div>}
+   
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
@@ -119,6 +119,7 @@ const EditUser = () => {
             {mutation.isPending ? <Spinner size="sm" /> : "Update User"}
           </Button>
         </div>
+        {error && <div className="text-red-500">{error}</div>}
       </form>
     </div>
   );

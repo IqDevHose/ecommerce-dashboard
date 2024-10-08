@@ -4,11 +4,11 @@ import PageTitle from "@/components/PageTitle";
 import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/AxiosInstance";
-import { useQuery, useQueryClient } from "@tanstack/react-query"; // Import useQueryClient
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import ConfirmationModal from "@/components/ConfirmationModal"; // Import the ConfirmationModal
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 type Payment = {
   id: string;
@@ -21,7 +21,7 @@ type Payment = {
 export default function UsersPage() {
   const [userSearch, setUserSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string } | null>(null);
 
   // Initialize query client
   const queryClient = useQueryClient();
@@ -44,7 +44,7 @@ export default function UsersPage() {
     try {
       await axiosInstance.delete(`/users/${id}`);
       setModalOpen(false); // Close modal after deletion
-      setSelectedUserId(null); // Clear selected user ID
+      setSelectedUser(null); // Clear selected user
       queryClient.invalidateQueries(["users"]); // Refetch users to update the list
     } catch (err) {
       console.error("Failed to delete user:", err);
@@ -87,7 +87,7 @@ export default function UsersPage() {
               src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${name}`}
               alt="user-image"
             />
-            <p>{row.getValue("name")}</p>
+            <p>{name}</p>
           </div>
         );
       },
@@ -109,6 +109,7 @@ export default function UsersPage() {
       header: "Actions",
       cell: ({ row }) => {
         const id = row.original.id; // Access the user's ID
+        const name = row.getValue("name"); // Access the user's name
 
         return (
           <div className="flex gap-2">
@@ -123,7 +124,7 @@ export default function UsersPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                setSelectedUserId(id); // Set selected user ID for deletion
+                setSelectedUser({ id, name }); // Set selected user for deletion
                 setModalOpen(true); // Open confirmation modal
               }}
             >
@@ -160,11 +161,11 @@ export default function UsersPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={() => {
-          if (selectedUserId) {
-            handleDelete(selectedUserId); // Call delete function with the selected user ID
+          if (selectedUser) {
+            handleDelete(selectedUser.id); // Call delete function with the selected user ID
           }
         }}
-        message={`Are you sure you want to delete user with ID ${selectedUserId}?`}
+        message={`Are you sure you want to delete user with name "${selectedUser?.name}"?`} // Updated message to use user's name
       />
     </div>
   );
