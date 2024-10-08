@@ -7,9 +7,10 @@ import Users from "./pages/users/Users";
 import ProductsPage from "./pages/products/Products";
 import OrdersPage from "./pages/orders/Orders";
 import Settings from "./pages/settings/Settings";
-import AddUser from "./pages/users/AddUser";
 import AddProduct from "./pages/products/AddProduct";
 import AddOrder from "./pages/orders/AddOrder";
+import AddUser from "./pages/users/AddUser";
+import EditUser from "./pages/users/EditUser";
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
         <Route path="/new-user" element={<AddUser />} />
+        <Route path="/edit-user/:id" element={<EditUser />} />
+
 
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/new-product" element={<AddProduct />} />

@@ -72,28 +72,8 @@ export function DataTable<TData, TValue>({
                     </TableCell>
                   ))}
 
-                  {/* <td className="flex gap-2">
-                    <Link to={editLink}>
-                      <SquarePen className="text-blue-600" />
-                    </Link>
-                    <Button onClick={() => handleDelete(row?.original?.id)}>
-                      <Trash2 className="text-red-600" />
-                    </Button>
-                  </td> */}
+                 
 
-                  <div className="mt-4">
-                    <td className="self-center h-ful">
-                      <Link to={editLink}>
-                        <SquarePen />
-                      </Link>
-                    </td>
-
-                    <td className="self-center h-ful">
-                      <Button variant={"ghost"} onClick={() => handleDelete(row?.original?.id)}>
-                        <Trash2 className="text-red-600" />
-                      </Button>
-                    </td>
-                  </div>
                 </TableRow>
               ))
             ) : (
