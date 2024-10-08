@@ -117,7 +117,7 @@ export default function ProductsPage() {
   } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const res = await axiosInstance.get("/products");
+      const res = await axiosInstance.get("/product");
       return res.data;
     },
   });
