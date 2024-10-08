@@ -117,7 +117,7 @@ export default function UsersPage() {
   );
 
   return (
-    <div className="flex flex-col p-10 gap-5 w-full">
+    <div className="flex flex-col overflow-hidden p-10 gap-5 w-full">
       <PageTitle title="Users" />
       <Options
         haveSearch={true}

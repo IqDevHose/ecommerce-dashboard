@@ -148,7 +148,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="flex flex-col p-10 gap-5 w-full">
+    <div className="flex flex-col overflow-hidden p-10 gap-5 w-full">
       <PageTitle title="Products" />
       <Options
         haveSearch={true}
