@@ -29,6 +29,7 @@ export default function LoginPage() {
       console.log(data)
       if(data.user.role === "ADMIN") {
         localStorage.setItem("jwtToken", data.access_token);
+        localStorage.setItem("userId", data.user.id);
         navigate("/"); // Redirect to home page
       }
       else {
