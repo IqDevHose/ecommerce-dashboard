@@ -9,6 +9,8 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { Button } from "./button";
+import { Navigate } from "react-router-dom";
 
 type Props = {};
 
@@ -18,7 +20,10 @@ export default function Sidebar({}: Props) {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
-
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Remove the token
+    Navigate("/login"); // Redirect to login
+  };
   return (
     <div className="h-screen border-r md:w-2/12 ">
       {/* Hamburger Button */}
@@ -108,6 +113,12 @@ export default function Sidebar({}: Props) {
           />
         </div>
       )}
+       <div className="sidebar">
+      {/* Your sidebar links */}
+      <Button onClick={handleLogout} variant="outline" className="mt-4">
+        Logout
+      </Button>
+    </div>
     </div>
   );
 }
