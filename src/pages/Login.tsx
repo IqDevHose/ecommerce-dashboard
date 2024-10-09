@@ -27,8 +27,14 @@ export default function LoginPage() {
     onSuccess: (data) => {
       // Save token to localStorage if login is successful
       console.log(data)
-      localStorage.setItem("jwtToken", data.access_token);
-      navigate("/users"); // Redirect to home page
+      if(data.user.role === "ADMIN") {
+        localStorage.setItem("jwtToken", data.access_token);
+        navigate("/"); // Redirect to home page
+      }
+      else {
+        setError("Only admin users can access this page.")
+      }
+
     },
     onError: () => {
       setError("Invalid email or password.");
