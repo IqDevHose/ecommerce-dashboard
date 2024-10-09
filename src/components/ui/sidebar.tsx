@@ -10,19 +10,19 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "./button";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
 export default function Sidebar({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
-
+  const navigate = useNavigate()
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
   const handleLogout = () => {
     localStorage.removeItem("jwtToken"); // Remove the token
-    Navigate("/login"); // Redirect to login
+    navigate("/login"); // Redirect to login
   };
   return (
     <div className="h-screen border-r md:w-2/12 ">

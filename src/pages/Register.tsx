@@ -26,7 +26,7 @@ export default function RegisterPage() {
       });
 
       // Save token to localStorage
-      localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("jwtToken", response.data.access_token);
       navigate("/"); // Redirect to home page after registration
     } catch (err) {
       console.error("Registration failed:", err);

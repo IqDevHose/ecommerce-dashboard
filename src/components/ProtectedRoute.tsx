@@ -1,5 +1,5 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import Sidebar from "./ui/sidebar";
 
 // Placeholder function to check authentication
 const isAuthenticated = (): boolean => {
@@ -8,15 +8,21 @@ const isAuthenticated = (): boolean => {
   return !!localStorage.getItem("jwtToken");
 };
 
-interface ProtectedRouteProps {
-  children: JSX.Element;
-}
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+
+const ProtectedRoute = () => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
-  return children;
+  return (
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </div>
+
+  );
 };
 
 export default ProtectedRoute;

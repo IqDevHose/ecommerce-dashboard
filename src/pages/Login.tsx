@@ -3,47 +3,45 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/AxiosInstance";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/Spinner";
+import { useMutation } from "@tanstack/react-query";
 
-// Placeholder authentication check (modify for real auth logic)
-const isAuthenticated = (): boolean => {
-  return !!localStorage.getItem("jwtToken");
-};
+type LoginData = {
+  username: string;
+  password: string;
+}
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Redirect authenticated users to home
-  useEffect(() => {
-    if (isAuthenticated()) {
-      navigate("/");
-    }
-  }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    try {
+  const mutation = useMutation({
+    mutationFn: async (data:LoginData) => {
       // API call to log in
-      const response = await axiosInstance.post("/auth/login", {
-        username: email,
-        password,
-      });
-
+      const response = await axiosInstance.post("/auth/login", data);
+      return response.data;
+    },
+    onSuccess: (data) => {
       // Save token to localStorage if login is successful
-      localStorage.setItem("jwtToken", response.data.access_token);
-      navigate("/"); // Redirect to home page
-    } catch (err) {
-      console.error("Login failed:", err);
+      console.log(data)
+      localStorage.setItem("jwtToken", data.access_token);
+      navigate("/users"); // Redirect to home page
+    },
+    onError: () => {
       setError("Invalid email or password.");
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    mutation.mutate({
+      username: email,
+      password,
+    })
   };
 
   return (
@@ -97,9 +95,9 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-              disabled={isLoading}
+              disabled={mutation.isPending}
             >
-              {isLoading ? <Spinner size="sm" /> : "Login"}
+              {mutation.isPending ? <Spinner size="sm" /> : "Login"}
             </Button>
           </div>
         </form>
