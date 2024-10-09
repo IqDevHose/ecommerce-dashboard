@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/AxiosInstance";
@@ -7,7 +6,7 @@ import Spinner from "@/components/Spinner";
 
 // Placeholder authentication check (modify for real auth logic)
 const isAuthenticated = (): boolean => {
-  return !!localStorage.getItem("token");
+  return !!localStorage.getItem("jwtToken");
 };
 
 export default function LoginPage() {
@@ -20,7 +19,7 @@ export default function LoginPage() {
   // Redirect authenticated users to home
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate("/"); 
+      navigate("/");
     }
   }, [navigate]);
 
@@ -31,10 +30,13 @@ export default function LoginPage() {
 
     try {
       // API call to log in
-      const response = await axiosInstance.post("/auth/login", { email, password });
+      const response = await axiosInstance.post("/auth/login", {
+        username: email,
+        password,
+      });
 
       // Save token to localStorage if login is successful
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("jwtToken", response.data.access_token);
       navigate("/"); // Redirect to home page
     } catch (err) {
       console.error("Login failed:", err);
@@ -54,7 +56,10 @@ export default function LoginPage() {
         <form className="space-y-6" onSubmit={handleLogin}>
           {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -70,7 +75,10 @@ export default function LoginPage() {
 
           {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -98,7 +106,10 @@ export default function LoginPage() {
 
         <div className="text-sm text-center">
           <p>
-            Don't have an account? <a href="/register" className="text-indigo-600">Sign Up</a>
+            Don't have an account?{" "}
+            <a href="/register" className="text-indigo-600">
+              Sign Up
+            </a>
           </p>
         </div>
       </div>

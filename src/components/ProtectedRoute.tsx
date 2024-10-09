@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 const isAuthenticated = (): boolean => {
   // Implement your actual authentication logic here
   // For example, check if a token exists in localStorage
-  return !!localStorage.getItem("token");
+  return !!localStorage.getItem("jwtToken");
 };
 
 interface ProtectedRouteProps {

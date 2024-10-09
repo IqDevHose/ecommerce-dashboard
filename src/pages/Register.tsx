@@ -20,10 +20,13 @@ export default function RegisterPage() {
 
     try {
       // API call to register a new user
-      const response = await axiosInstance.post("/auth/login", { email, password });
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
 
       // Save token to localStorage
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", response.data.access_token);
       navigate("/"); // Redirect to home page after registration
     } catch (err) {
       console.error("Registration failed:", err);
@@ -43,7 +46,10 @@ export default function RegisterPage() {
         <form className="space-y-6" onSubmit={handleRegister}>
           {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -59,7 +65,10 @@ export default function RegisterPage() {
 
           {/* Password Input */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -87,7 +96,10 @@ export default function RegisterPage() {
 
         <div className="text-sm text-center">
           <p>
-            Already have an account? <a href="/login" className="text-indigo-600">Login</a>
+            Already have an account?{" "}
+            <a href="/login" className="text-indigo-600">
+              Login
+            </a>
           </p>
         </div>
       </div>

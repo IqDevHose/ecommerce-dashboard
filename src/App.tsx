@@ -19,7 +19,7 @@ import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 
 // Layout component to include Sidebar for authenticated routes
-const App = () => (
+const Layout = () => (
   <div className="flex">
     <Sidebar />
     <div className="flex-1">
@@ -45,29 +45,29 @@ const App = () => (
   </div>
 );
 
-// function App() {
-//   return (
-//     <Routes>
-//       {/* Public Routes */}
-//       <Route path="/login" element={<LoginPage />} />
-//       <Route path="/register" element={<RegisterPage />} /> {/* Register route */}
-//       {/* Protected Routes */}
-//       <Route
-//         path="/*"
-//         element={
-//           <ProtectedRoute>
-//             <Layout />
-//           </ProtectedRoute>
-//         }
-//       />
+function App() {
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} /> {/* Register route */}
+      {/* Protected Routes */}
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      />
 
-//       {/* Redirect root to login if not authenticated */}
-//       <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Redirect root to login if not authenticated */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
-//       {/* Optional: Catch-all route for unmatched paths */}
-//       <Route path="*" element={<NotFound />} />
-//     </Routes>
-//   );
-// }
+      {/* Optional: Catch-all route for unmatched paths */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
 
 export default App;

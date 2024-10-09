@@ -21,7 +21,7 @@ export default function Sidebar({}: Props) {
     setIsOpen(!isOpen);
   };
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove the token
+    localStorage.removeItem("jwtToken"); // Remove the token
     Navigate("/login"); // Redirect to login
   };
   return (
