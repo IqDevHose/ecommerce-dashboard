@@ -14,10 +14,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   message,
 }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div className={`fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 ${!isOpen ? 'hidden' : ''}`}>
       <div className="bg-white p-5 rounded shadow-lg max-w-md mx-auto">
         <h3 className="text-lg font-semibold">Confirm Delete</h3>
         <p className="mt-2">{message}</p>

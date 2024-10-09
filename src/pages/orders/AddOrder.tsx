@@ -7,9 +7,12 @@ import { Input } from "@/components/ui/input"; // Import the correct named expor
 import { useMutation } from "@tanstack/react-query";
 
 export enum OrderStatus {
-  PENDING = "Pending",
-  PROCESSING = "Processing",
-  COMPLETED = "Completed",
+
+  PENDING="PENDING",
+  SHIPPED="SHIPPED",
+  DELIVERED="DELIVERED",
+  CANCELLED="CANCELLED",
+ 
 }
 
 const AddOrder = () => {
@@ -92,10 +95,12 @@ const AddOrder = () => {
             Select Order Status
           </option>
           <option value={OrderStatus.PENDING}>{OrderStatus.PENDING}</option>
-          <option value={OrderStatus.PROCESSING}>
-            {OrderStatus.PROCESSING}
+          <option value={OrderStatus.CANCELLED}>
+            {OrderStatus.CANCELLED}
           </option>
-          <option value={OrderStatus.COMPLETED}>{OrderStatus.COMPLETED}</option>
+          <option value={OrderStatus.DELIVERED}>{OrderStatus.DELIVERED}</option>
+          <option value={OrderStatus.SHIPPED}>{OrderStatus.SHIPPED}</option>
+
         </select>
         <Button type="submit" disabled={mutation.isPending}>
           Add Order

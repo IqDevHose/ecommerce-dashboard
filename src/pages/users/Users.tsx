@@ -154,7 +154,9 @@ export default function UsersPage() {
         columns={columns}
         data={filteredData}
         editLink={"/edit-user"} // Provide the base link for editing users
-      />
+        handleDelete={function (id: string): void {
+          throw new Error("Function not implemented.");
+        } }      />
 
       {/* Confirmation Modal */}
       <ConfirmationModal

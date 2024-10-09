@@ -50,71 +50,7 @@ const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-const data: Payment[] = [
-  {
-    id: "1",
-    order: "ORD001",
-    status: "Pending",
-    lastOrder: "2023-01-15",
-    method: "Credit Card",
-  },
-  {
-    id: "2",
-    order: "ORD002",
-    status: "Processing",
-    lastOrder: "2023-02-20",
-    method: "PayPal",
-  },
-  {
-    id: "3",
-    order: "ORD003",
-    status: "Completed",
-    lastOrder: "2023-03-10",
-    method: "Stripe",
-  },
-  {
-    id: "4",
-    order: "ORD004",
-    status: "Pending",
-    lastOrder: "2023-04-05",
-    method: "Venmo",
-  },
-  {
-    id: "5",
-    order: "ORD005",
-    status: "Completed",
-    lastOrder: "2023-05-12",
-    method: "Bank Transfer",
-  },
-  {
-    id: "6",
-    order: "ORD006",
-    status: "Processing",
-    lastOrder: "2023-06-18",
-    method: "Apple Pay",
-  },
-  {
-    id: "7",
-    order: "ORD007",
-    status: "Completed",
-    lastOrder: "2023-07-22",
-    method: "Google Pay",
-  },
-  {
-    id: "8",
-    order: "ORD008",
-    status: "Pending",
-    lastOrder: "2023-08-30",
-    method: "Cryptocurrency",
-  },
-  {
-    id: "9",
-    order: "ORD009",
-    status: "Processing",
-    lastOrder: "2023-09-05",
-    method: "Alipay",
-  },
-];
+
 
 export default function Orders() {
   const [userSearch, setUserSearch] = useState("");
@@ -146,12 +82,7 @@ export default function Orders() {
     );
 
   // Search
-  const filteredData = order?.filter(
-    (order: Payment) =>
-      order?.order.includes(userSearch) ||
-      order?.status.includes(userSearch) ||
-      order?.method.includes(userSearch)
-  );
+  const filteredData = order
 
   const handleDelete = (orderId: string) => {
     console.log("Delete user with ID:", orderId);

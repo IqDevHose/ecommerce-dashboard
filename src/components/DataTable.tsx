@@ -38,7 +38,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
+console.log(table.getRowModel());
   return (
     <div>
       <div className="rounded-md border">
