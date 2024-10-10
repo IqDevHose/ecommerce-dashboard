@@ -135,17 +135,17 @@ const Orders = () => {
                 </td>
                 <td className="border-b border-gray-300 p-4">
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="p-2   rounded-md cursor-pointer">
+                    <DropdownMenuTrigger className="p-2 border-none outline-none  rounded-md cursor-pointer">
                       <Badge
                         variant={
                           order.status === "PENDING"
-                            ? "default"
+                            ? "warning"
                             : order.status === "CANCELLED"
                             ? "destructive"
                             : order.status === "DELIVERED"
-                            ? "outline"
+                            ? "done"
                             : order.status === "SHIPPED"
-                            ? "primary" // Assuming you have a "primary" variant for shipped
+                            ? "success" // Assuming you have a "primary" variant for shipped
                             : "default" // Fallback variant
                         }
                       >
