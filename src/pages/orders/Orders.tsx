@@ -1,125 +1,148 @@
-import { DataTable } from "@/components/DataTable";
-import Options from "@/components/Options";
-import PageTitle from "@/components/PageTitle";
-import Spinner from "@/components/Spinner";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import axiosInstance from "@/utils/AxiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+// Orders.js
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../../utils/AxiosInstance'; // Adjust the import path
 
-type User = {
-  id: string;
-  name: string; // Assuming you want to include a name field for users
-  status: string;
-  lastOrder: string;
-  method: string;
-};
+const Orders = () => {
+  const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [selectedUser, setSelectedUser] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
 
-const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: "name",
-    header: "User", // Changed from 'Order' to 'User'
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row, column }) => {
-      const status = row.getValue("status");
-      return (
-        <div
-          className={cn("font-medium w-fit px-4 py-2 rounded-lg", {
-            "bg-red-200": status === "Pending",
-            "bg-orange-200": status === "Processing",
-            "bg-green-200": status === "Completed",
-          })}
-        >
-          {/* Dropdown for status selection */}
-          <select
-            value={status}
-            onChange={(e) => {
-              // Handle status change here (you may want to call an API to update status)
-              console.log("Status updated to:", e.target.value);
-            }}
-            className="bg-transparent border-none outline-none"
-          >
-            <option value="Pending">Pending</option>
-            <option value="Processing">Processing</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "lastOrder",
-    header: "Last Order",
-  },
-  {
-    accessorKey: "method",
-    header: "Method",
-  },
-];
+  const orderStatuses = ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"];
 
-export default function Users() { // Changed the function name to Users
-  const [userSearch, setUserSearch] = useState("");
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axiosInstance.get('users');
+        setUsers(response.data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
 
-  // Query for users instead of orders
-  const {
-    data: users,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/user"); // Change the endpoint to fetch users
-      return res.data;
-    },
-  });
+    const fetchOrders = async () => {
+      try {
+        const response = await axiosInstance.get('order');
+        setOrders(response.data);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-full self-center mx-auto">
-        <Spinner size="md" />
-      </div>
-    );
-  if (error)
-    return (
-      <div className="flex justify-center items-center h-full self-center mx-auto">
-        Error loading users
-      </div>
-    );
+    fetchUsers();
+    fetchOrders();
+  }, []);
 
-  // Search - You can implement search functionality here if needed
-  const filteredData = users; // You can add filtering logic based on userSearch
+  useEffect(() => {
+    // Filter orders based on selected user and status
+    const filtered = orders.filter(order => {
+      const userMatch = selectedUser ? order.userId === selectedUser : true;
+      const statusMatch = selectedStatus ? order.status === selectedStatus : true;
+      return userMatch && statusMatch;
+    });
+    setFilteredOrders(filtered);
+  }, [selectedUser, selectedStatus, orders]);
 
-  const handleDelete = (userId: string) => {
-    console.log("Delete user with ID:", userId);
+  // Function to update order status
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await axiosInstance.patch(`order/${orderId}`, { status: newStatus });
+      // Update the local orders state to reflect the change
+      setOrders(orders.map(order =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      ));
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
   };
 
   return (
-    <div className="flex flex-col overflow-hidden p-10 gap-5 w-full">
-      <PageTitle title="Users" /> {/* Changed the title to 'Users' */}
-      <Options
-        haveSearch={true}
-        searchValue={userSearch}
-        setSearchValue={setUserSearch}
-        buttons={[
-          <Link to={"/new-user"}> {/* Changed to new-user route */}
-            <Button variant={"outline"} className="">
-              Add User
-            </Button>
-          </Link>,
-        ]}
-      />
-      <DataTable
-        editLink="/edit-user" // Changed edit link to users
-        handleDelete={handleDelete}
-        columns={columns}
-        data={filteredData}
-      />
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-4">Orders</h1>
+      <div className='flex flex-row gap-4'>
+        <div className="mb-4">
+          <select
+            id="userSelect"
+            value={selectedUser}
+            onChange={(e) => setSelectedUser(e.target.value)}
+            className="p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Users</option>
+            {users.map(user => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <select
+            id="statusSelect"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Statuses</option>
+            {orderStatuses.map(status => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto shadow-md rounded-lg">
+        <table className="min-w-full border-collapse border border-gray-300">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border-b border-gray-300 p-4 text-left">User Name</th>
+              <th className="border-b border-gray-300 p-4 text-left">Order Items</th>
+              <th className="border-b border-gray-300 p-4 text-left">Current Status</th>
+              <th className="border-b border-gray-300 p-4 text-left">Created At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredOrders.map(order => (
+              <tr key={order.id} className="hover:bg-gray-50 transition">
+                <td className="border-b border-gray-300 p-4">
+                  {users.find(user => user.id === order.userId)?.name}
+                </td>
+                <td className="border-b border-gray-300 p-4">
+                  {order.orderItems.map(item => (
+                    <div key={item.id}>{item.name}</div>
+                  ))}
+                </td>
+                <td className="border-b border-gray-300 p-4">
+                  <select
+                    value={order.status}
+                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                    className="p-1 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {orderStatuses.map(status => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="border-b border-gray-300 p-4">
+                  {new Date(order.createdAt).toLocaleString()}
+                </td>
+              </tr>
+            ))}
+            {filteredOrders.length === 0 && (
+              <tr>
+                <td colSpan="4" className="border-b border-gray-300 p-4 text-center">No orders found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
-}
+};
+
+export default Orders;
