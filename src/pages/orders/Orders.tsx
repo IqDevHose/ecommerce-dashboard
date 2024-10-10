@@ -1,61 +1,56 @@
-// Orders.js
-import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../utils/AxiosInstance'; // Adjust the import path
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axiosInstance from '@/utils/AxiosInstance';
 
 const Orders = () => {
-  const [users, setUsers] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const queryClient = useQueryClient();
 
   const orderStatuses = ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"];
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axiosInstance.get('users');
-        setUsers(response.data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    const fetchOrders = async () => {
-      try {
-        const response = await axiosInstance.get('order');
-        setOrders(response.data);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
-
-    fetchUsers();
-    fetchOrders();
-  }, []);
-
-  useEffect(() => {
-    // Filter orders based on selected user and status
-    const filtered = orders.filter(order => {
-      const userMatch = selectedUser ? order.userId === selectedUser : true;
-      const statusMatch = selectedStatus ? order.status === selectedStatus : true;
-      return userMatch && statusMatch;
-    });
-    setFilteredOrders(filtered);
-  }, [selectedUser, selectedStatus, orders]);
-
-  // Function to update order status
-  const updateOrderStatus = async (orderId, newStatus) => {
-    try {
-      await axiosInstance.patch(`order/${orderId}`, { status: newStatus });
-      // Update the local orders state to reflect the change
-      setOrders(orders.map(order =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      ));
-    } catch (error) {
-      console.error('Error updating order status:', error);
+  // Fetch users with useQuery
+  const { data: users = [], isLoading: usersLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const response = await axiosInstance.get('users');
+      return response.data;
     }
+  });
+
+  // Fetch orders with useQuery
+  const { data: orders = [], isLoading: ordersLoading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      const response = await axiosInstance.get('order');
+      return response.data;
+    }
+  });
+
+  // Filter orders based on selected user and status
+  const filteredOrders = orders.filter(order => {
+    const userMatch = selectedUser ? order.userId === selectedUser : true;
+    const statusMatch = selectedStatus ? order.status === selectedStatus : true;
+    return userMatch && statusMatch;
+  });
+
+  // Mutation to update the order status
+  const mutation = useMutation({
+    mutationFn: async ({ orderId, newStatus }) => {
+      await axiosInstance.put(`order/${orderId}`, { status: newStatus });
+    },
+    onSuccess: () => {
+      // Invalidate and refetch orders after updating the status
+      queryClient.invalidateQueries(['orders']);
+    }
+  });
+
+  // Function to handle order status change
+  const updateOrderStatus = (orderId, newStatus) => {
+    mutation.mutate({ orderId, newStatus });
   };
+
+  if (usersLoading || ordersLoading) return <p>Loading...</p>;
 
   return (
     <div className="container mx-auto p-4">
