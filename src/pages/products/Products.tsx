@@ -137,7 +137,7 @@ export default function ProductsPage() {
       setModalOpen(false); // Close modal after deletion
       setSelectedProduct(null); // Clear selected product
 
-      // Invalidate and refetch the products
+      // Invalidate and refetch the products  
       queryClient.invalidateQueries<Product[]>({ queryKey: ["products"] }); // Refetch products to update the list
     } catch (err) {
       console.error("Failed to delete product:", err);

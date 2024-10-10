@@ -2,37 +2,46 @@ import axiosInstance from "@/utils/AxiosInstance";
 import { OrderT, StatusT, UserT } from "@/utils/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-
-
-
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@radix-ui/react-dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 const Orders = () => {
-  const [selectedUser, setSelectedUser] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedUser, setSelectedUser] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
   const queryClient = useQueryClient();
 
-  const UpdateOrderStatusParams = ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"];
+  const UpdateOrderStatusParams: StatusT[] = [
+    "PENDING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+  ];
 
   // Fetch users with useQuery
   const { data: users = [], isLoading: usersLoading } = useQuery<UserT[]>({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: async () => {
-      const response = await axiosInstance.get('users');
+      const response = await axiosInstance.get("users");
       return response.data;
-    }
+    },
   });
 
   // Fetch orders with useQuery
   const { data: orders = [], isLoading: ordersLoading } = useQuery<OrderT[]>({
-    queryKey: ['orders'],
+    queryKey: ["orders"],
     queryFn: async () => {
-      const response = await axiosInstance.get('order');
+      const response = await axiosInstance.get("order");
       return response.data;
-    }
+    },
   });
 
   // Filter orders based on selected user and status
-  const filteredOrders = orders.filter(order => {
+  const filteredOrders = orders.filter((order) => {
     const userMatch = selectedUser ? order.userId === selectedUser : true;
     const statusMatch = selectedStatus ? order.status === selectedStatus : true;
     return userMatch && statusMatch;
@@ -40,34 +49,28 @@ const Orders = () => {
 
   // Mutation to update the order status
   const mutation = useMutation({
-    mutationFn: async ({ orderId: order, newStatus }:{orderId:string,newStatus:StatusT}) => {
-      await axiosInstance.put(`order/${order}`, { status: newStatus });
+    mutationFn: async ({
+      orderId,
+      newStatus,
+    }: {
+      orderId: string;
+      newStatus: StatusT;
+    }) => {
+      await axiosInstance.put(`order/${orderId}`, { status: newStatus });
     },
     onSuccess: () => {
       // Invalidate and refetch orders after updating the status
-      queryClient.invalidateQueries(['orders']);
-    }
+      queryClient.invalidateQueries(["orders"]);
+    },
+    onError: (error) => {
+      // Handle error here (e.g., show a notification)
+      console.error("Error updating order status:", error);
+    },
   });
 
   // Function to handle order status change
-  const updateOrderStatus = (orderId:string, newStatus:StatusT) => {
+  const updateOrderStatus = (orderId: string, newStatus: StatusT) => {
     mutation.mutate({ orderId, newStatus });
-  };
-
-  // Function to get background color class based on status
-  const getStatusBgColor = (status:StatusT) => {
-    switch (status) {
-      case 'PENDING':
-        return 'bg-yellow-200';
-      case 'SHIPPED':
-        return 'bg-blue-200';
-      case 'DELIVERED':
-        return 'bg-green-200';
-      case 'CANCELLED':
-        return 'bg-red-200';
-      default:
-        return '';
-    }
   };
 
   if (usersLoading || ordersLoading) return <p>Loading...</p>;
@@ -75,7 +78,7 @@ const Orders = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Orders</h1>
-      <div className='flex flex-row gap-4'>
+      <div className="flex flex-row gap-4">
         <div className="mb-4">
           <select
             id="userSelect"
@@ -84,7 +87,7 @@ const Orders = () => {
             className="p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Users</option>
-            {users.map(user => (
+            {users.map((user) => (
               <option key={user.id} value={user.id}>
                 {user.name}
               </option>
@@ -97,10 +100,10 @@ const Orders = () => {
             id="statusSelect"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="p-2  "
+            className="p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Statuses</option>
-            {UpdateOrderStatusParams.map(status => (
+            {UpdateOrderStatusParams.map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
@@ -120,37 +123,61 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map(order => (
+            {filteredOrders.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50 transition">
                 <td className="border-b border-gray-300 p-4">
-                  {users.find(user => user.id === order.userId)?.name}
+                  {users.find((user) => user.id === order.userId)?.name}
                 </td>
                 <td className="border-b border-gray-300 p-4">
-                  {order.orderItems.map(item => (
+                  {order.orderItems.map((item) => (
                     <div key={item.id}>{item.name}</div>
                   ))}
                 </td>
                 <td className="border-b border-gray-300 p-4">
-                  <select
-                    value={order.status}
-                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                    className={`p-1 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    {UpdateOrderStatusParams.map(status => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-2   rounded-md cursor-pointer">
+                      <Badge
+                        variant={
+                          order.status === "PENDING"
+                            ? "default"
+                            : order.status === "CANCELLED"
+                            ? "destructive"
+                            : order.status === "DELIVERED"
+                            ? "outline"
+                            : order.status === "SHIPPED"
+                            ? "primary" // Assuming you have a "primary" variant for shipped
+                            : "default" // Fallback variant
+                        }
+                      >
+                        {order.status}
+                      </Badge>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white  rounded-md shadow-lg">
+                      {UpdateOrderStatusParams.map((status) => (
+                        <DropdownMenuItem
+                          key={status}
+                          onClick={() =>
+                            updateOrderStatus(order.id, status as StatusT)
+                          }
+                          className="cursor-pointer px-2 py-1 hover:bg-gray-200"
+                        >
+                          {status}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </td>
-                <td className="border-b p-4">
-                  {order.createdAt}
-                </td>
+                <td className="border-b p-4">{order.createdAt}</td>
               </tr>
             ))}
             {filteredOrders.length === 0 && (
               <tr>
-                <td colSpan={4} className="border-b border-gray-300 p-4 text-center">No orders found</td>
+                <td
+                  colSpan={4}
+                  className="border-b border-gray-300 p-4 text-center"
+                >
+                  No orders found
+                </td>
               </tr>
             )}
           </tbody>
