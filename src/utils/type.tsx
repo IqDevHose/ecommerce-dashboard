@@ -1,6 +1,6 @@
 // type.tsx
 
-export interface user {
+export interface UserT {
     id: string;
     name: string;
   }
@@ -9,17 +9,18 @@ export interface user {
     id: string;
     name: string;
   }
+  export type StatusT = "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
   
   export interface OrderT {
     id: string;
     userId: string;
     orderItems: OrderItem[];
-    status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+    status: StatusT;
     createdAt: string;
   }
   
   export interface UpdateOrderStatusParams {
     orderId: string;
-    newStatus: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+    newStatus: StatusT;
   }
   

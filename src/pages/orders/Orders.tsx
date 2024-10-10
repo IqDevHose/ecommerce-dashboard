@@ -1,7 +1,7 @@
 import axiosInstance from "@/utils/AxiosInstance";
+import { OrderT, StatusT, UserT } from "@/utils/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { user, OrderT, UpdateOrderStatusParams } from './type'; 
 
 
 
@@ -14,7 +14,7 @@ const Orders = () => {
   const UpdateOrderStatusParams = ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"];
 
   // Fetch users with useQuery
-  const { data: users = [], isLoading: usersLoading } = useQuery({
+  const { data: users = [], isLoading: usersLoading } = useQuery<UserT[]>({
     queryKey: ['users'],
     queryFn: async () => {
       const response = await axiosInstance.get('users');
@@ -23,7 +23,7 @@ const Orders = () => {
   });
 
   // Fetch orders with useQuery
-  const { data: orders = [], isLoading: ordersLoading } = useQuery({
+  const { data: orders = [], isLoading: ordersLoading } = useQuery<OrderT[]>({
     queryKey: ['orders'],
     queryFn: async () => {
       const response = await axiosInstance.get('order');
@@ -40,7 +40,7 @@ const Orders = () => {
 
   // Mutation to update the order status
   const mutation = useMutation({
-    mutationFn: async ({ orderId: order, newStatus }) => {
+    mutationFn: async ({ orderId: order, newStatus }:{orderId:string,newStatus:StatusT}) => {
       await axiosInstance.put(`order/${order}`, { status: newStatus });
     },
     onSuccess: () => {
@@ -50,12 +50,12 @@ const Orders = () => {
   });
 
   // Function to handle order status change
-  const updateOrderStatus = (orderId, newStatus) => {
+  const updateOrderStatus = (orderId:string, newStatus:StatusT) => {
     mutation.mutate({ orderId, newStatus });
   };
 
   // Function to get background color class based on status
-  const getStatusBgColor = (status) => {
+  const getStatusBgColor = (status:StatusT) => {
     switch (status) {
       case 'PENDING':
         return 'bg-yellow-200';
@@ -134,7 +134,7 @@ const Orders = () => {
                   <select
                     value={order.status}
                     onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                    className={`p-1 focus:outline-none focus:ring-2 focus:ring-blue-500 ${getStatusBgColor(order.status)}`}
+                    className={`p-1 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   >
                     {UpdateOrderStatusParams.map(status => (
                       <option key={status} value={status}>
@@ -144,13 +144,13 @@ const Orders = () => {
                   </select>
                 </td>
                 <td className="border-b p-4">
-                  {new Date(order.createdAt).toLocaleString()}
+                  {order.createdAt}
                 </td>
               </tr>
             ))}
             {filteredOrders.length === 0 && (
               <tr>
-                <td colSpan="4" className="border-b border-gray-300 p-4 text-center">No orders found</td>
+                <td colSpan={4} className="border-b border-gray-300 p-4 text-center">No orders found</td>
               </tr>
             )}
           </tbody>
