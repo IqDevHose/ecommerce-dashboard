@@ -1,13 +1,17 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axiosInstance from '@/utils/AxiosInstance';
+import axiosInstance from "@/utils/AxiosInstance";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { user, OrderT, UpdateOrderStatusParams } from './type'; 
+
+
+
 
 const Orders = () => {
   const [selectedUser, setSelectedUser] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const queryClient = useQueryClient();
 
-  const orderStatuses = ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"];
+  const UpdateOrderStatusParams = ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"];
 
   // Fetch users with useQuery
   const { data: users = [], isLoading: usersLoading } = useQuery({
@@ -36,8 +40,8 @@ const Orders = () => {
 
   // Mutation to update the order status
   const mutation = useMutation({
-    mutationFn: async ({ orderId, newStatus }) => {
-      await axiosInstance.put(`order/${orderId}`, { status: newStatus });
+    mutationFn: async ({ orderId: order, newStatus }) => {
+      await axiosInstance.put(`order/${order}`, { status: newStatus });
     },
     onSuccess: () => {
       // Invalidate and refetch orders after updating the status
@@ -48,6 +52,22 @@ const Orders = () => {
   // Function to handle order status change
   const updateOrderStatus = (orderId, newStatus) => {
     mutation.mutate({ orderId, newStatus });
+  };
+
+  // Function to get background color class based on status
+  const getStatusBgColor = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'bg-yellow-200';
+      case 'SHIPPED':
+        return 'bg-blue-200';
+      case 'DELIVERED':
+        return 'bg-green-200';
+      case 'CANCELLED':
+        return 'bg-red-200';
+      default:
+        return '';
+    }
   };
 
   if (usersLoading || ordersLoading) return <p>Loading...</p>;
@@ -77,10 +97,10 @@ const Orders = () => {
             id="statusSelect"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2  "
           >
             <option value="">All Statuses</option>
-            {orderStatuses.map(status => (
+            {UpdateOrderStatusParams.map(status => (
               <option key={status} value={status}>
                 {status}
               </option>
@@ -114,16 +134,16 @@ const Orders = () => {
                   <select
                     value={order.status}
                     onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                    className="p-1 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={`p-1 focus:outline-none focus:ring-2 focus:ring-blue-500 ${getStatusBgColor(order.status)}`}
                   >
-                    {orderStatuses.map(status => (
+                    {UpdateOrderStatusParams.map(status => (
                       <option key={status} value={status}>
                         {status}
                       </option>
                     ))}
                   </select>
                 </td>
-                <td className="border-b border-gray-300 p-4">
+                <td className="border-b p-4">
                   {new Date(order.createdAt).toLocaleString()}
                 </td>
               </tr>

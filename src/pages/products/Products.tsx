@@ -138,7 +138,7 @@ export default function ProductsPage() {
       setSelectedProduct(null); // Clear selected product
 
       // Invalidate and refetch the products
-      queryClient.invalidateQueries(["products"]); // Refetch products to update the list
+      queryClient.invalidateQueries<Product[]>({ queryKey: ["products"] }); // Refetch products to update the list
     } catch (err) {
       console.error("Failed to delete product:", err);
     }
@@ -161,8 +161,9 @@ export default function ProductsPage() {
       <DataTable
         editLink="/edit-product"
         columns={columns} // Pass columns directly
-        data={filteredData}
-      />
+        data={filteredData} handleDelete={function (id: string): void {
+          throw new Error("Function not implemented.");
+        } }      />
 
       {/* Confirmation Modal */}
       <ConfirmationModal
