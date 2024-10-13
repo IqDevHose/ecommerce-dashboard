@@ -63,10 +63,11 @@ const EditProduct = () => {
   // Populate form fields with product details when product data is fetched
   useEffect(() => {
     if (product) {
+      console.log(product)
       setName(product.name || ""); // Ensure name is always a string
       setDescription(product.description || ""); // Ensure description is always a string
       setPrice(product.price || null); // Ensure price is handled properly
-      setUploadImageUrl(product.image || null); // Set the image URL
+      setUploadImageUrl(`http://localhost:3000${product.imageUrl}` || null); // Set the image URL
       setCategoryIds(product.categoryIds || []); // Set categoryIds to an array
     }
   }, [product]);
