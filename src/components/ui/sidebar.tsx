@@ -16,7 +16,7 @@ type Props = {};
 
 export default function Sidebar({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -111,14 +111,14 @@ export default function Sidebar({}: Props) {
               },
             ]}
           />
+          <div className="sidebar">
+            {/* Your sidebar links */}
+            <Button onClick={handleLogout} variant="outline" className="mt-4">
+              Logout
+            </Button>
+          </div>
         </div>
       )}
-       <div className="sidebar">
-      {/* Your sidebar links */}
-      <Button onClick={handleLogout} variant="outline" className="mt-4">
-        Logout
-      </Button>
-    </div>
     </div>
   );
 }

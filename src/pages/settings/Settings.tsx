@@ -51,30 +51,30 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex flex-col overflow-hidden p-10 gap-5 w-full">
+    <div className="flex flex-col items-center p-6 space-y-8 w-full max-w-3xl mx-auto">
       <PageTitle title="User Profile" />
       
       {/* Profile Information Section */}
-      <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
-        <ul className="mb-4">
-          <li className="mb-2">
-            <span className="font-bold">User ID: </span>
+      <div className="p-8 bg-gray-50 rounded-lg shadow-lg w-full max-w-md space-y-4">
+        <h2 className="text-2xl font-semibold text-gray-800">Profile Information</h2>
+        <ul className="space-y-3">
+          <li className="flex justify-between items-center">
+            <span className="font-medium text-gray-600">User ID:</span>
             <span>{profileData.userId}</span>
           </li>
-          <li className="mb-2">
-            <span className="font-bold">Role: </span>
+          <li className="flex justify-between items-center">
+            <span className="font-medium text-gray-600">Role:</span>
             <span>{profileData.userRole}</span>
           </li>
-          <li className="mb-2">
-            <span className="font-bold">Email: </span>
+          <li className="flex justify-between items-center">
+            <span className="font-medium text-gray-600">Email:</span>
             {editMode ? (
               <input
                 type="email"
                 name="userEmail"
                 value={profileData.userEmail}
                 onChange={handleInputChange}
-                className="border p-1 rounded"
+                className="border border-gray-300 rounded-md p-2 text-sm"
               />
             ) : (
               <span>{profileData.userEmail}</span>
@@ -85,14 +85,14 @@ export default function Profile() {
         {editMode ? (
           <button
             onClick={handleSave}
-            className="bg-blue-500 text-white py-2 px-4 rounded"
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full mt-4"
           >
             Save Changes
           </button>
         ) : (
           <button
             onClick={() => setEditMode(true)}
-            className="bg-gray-500 text-white py-2 px-4 rounded"
+            className="bg-gray-500 text-white py-2 px-4 rounded-lg w-full mt-4"
           >
             Edit Profile
           </button>
@@ -100,25 +100,29 @@ export default function Profile() {
       </div>
 
       {/* Orders Section */}
-      <div className="mt-6 p-6 bg-white rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">User Orders</h2>
+      <div className="p-8 bg-gray-50 rounded-lg shadow-lg w-full max-w-md space-y-4">
+        <h2 className="text-2xl font-semibold text-gray-800">User Orders</h2>
         {userOrders.length > 0 ? (
-          <ul>
+          <ul className="space-y-4">
             {userOrders.map((order) => (
-              <li key={order.orderId} className="mb-2">
-                <span className="font-bold">Order ID: </span>
-                <span>{order.orderId}</span>
-                <br />
-                <span className="font-bold">Order Date: </span>
-                <span>{order.orderDate}</span>
-                <br />
-                <span className="font-bold">Order Total: </span>
-                <span>${order.orderTotal.toFixed(2)}</span>
+              <li key={order.orderId} className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Order ID:</span>
+                  <span>{order.orderId}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Order Date:</span>
+                  <span>{order.orderDate}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Order Total:</span>
+                  <span>${order.orderTotal.toFixed(2)}</span>
+                </div>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No orders available.</p>
+          <p className="text-gray-600">No orders available.</p>
         )}
       </div>
     </div>
