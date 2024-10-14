@@ -59,18 +59,22 @@ const EditProduct = () => {
       );
     },
   });
-
-  // Populate form fields with product details when product data is fetched
   useEffect(() => {
     if (product) {
-      console.log(product)
+      console.log(product);
       setName(product.name || ""); // Ensure name is always a string
       setDescription(product.description || ""); // Ensure description is always a string
       setPrice(product.price || null); // Ensure price is handled properly
-      setUploadImageUrl(`http://localhost:3000${product.imageUrl}` || null); // Set the image URL
+      setUploadImageUrl(
+        import.meta.env.VITE_API_BASE_URL // Changed from process.env to import.meta.env
+          ? `${import.meta.env.VITE_API_BASE_URL}${product.imageUrl}`
+          : null
+      ); // Set the image URL
       setCategoryIds(product.categoryIds || []); // Set categoryIds to an array
     }
   }, [product]);
+  
+  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
