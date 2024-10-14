@@ -4,9 +4,14 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/AxiosInstance";
 import Spinner from "@/components/Spinner";
+import CreatableSelect from "react-select/creatable";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Progress } from "@/components/ui/Progress";
 import * as RadixProgress from "@radix-ui/react-progress";
+
+interface CategoryOption {
+  value: string;
+  label: string;
+}
 
 const AddProduct = () => {
   const [name, setName] = useState("");
@@ -19,12 +24,17 @@ const AddProduct = () => {
   const navigate = useNavigate();
   const [progress, setProgress] = useState<number>(0);
 
-  // Fetch categories
-  const { data: categories, isPending: loadingCategories } = useQuery({
+  // Fetch categories with default value as empty array
+  const { data: categories = [], isPending: loadingCategories } = useQuery<
+    CategoryOption[]
+  >({
     queryKey: ["category"],
     queryFn: async () => {
       const res = await axiosInstance.get("/category");
-      return res.data;
+      return res.data.map((category: { id: string; name: string }) => ({
+        value: category.id,
+        label: category.name,
+      }));
     },
   });
 
@@ -56,7 +66,7 @@ const AddProduct = () => {
   // Cleanup the object URL to prevent memory leaks
   useEffect(() => {
     return () => {
-      if (uploadImageUrl) {
+      if (uploadImageUrl && uploadImageUrl.startsWith("blob:")) {
         URL.revokeObjectURL(uploadImageUrl);
       }
     };
@@ -82,8 +92,6 @@ const AddProduct = () => {
     formData.append("name", name);
     formData.append("description", description);
     formData.append("price", String(price));
-
-    // Append each category ID as separate field
     categoryIds.forEach((id) => formData.append("categoryIds", id));
 
     if (uploadImage) {
@@ -93,13 +101,11 @@ const AddProduct = () => {
     mutation.mutate(formData);
   };
 
-  const handleCategorySelect = (categoryId: string) => {
-    // Toggle category selection
-    if (categoryIds.includes(categoryId)) {
-      setCategoryIds(categoryIds.filter((id) => id !== categoryId));
-    } else {
-      setCategoryIds([...categoryIds, categoryId]);
-    }
+  const handleCategoryChange = (selectedOptions: CategoryOption[] | null) => {
+    const selectedIds = selectedOptions
+      ? selectedOptions.map((option) => option.value)
+      : [];
+    setCategoryIds(selectedIds);
   };
 
   return (
@@ -117,7 +123,7 @@ const AddProduct = () => {
             onChange={(e) => setName(e.target.value)}
             className="border p-2 rounded"
             required
-            disabled={mutation.isPending }
+            disabled={mutation.isPending}
           />
         </div>
 
@@ -130,7 +136,7 @@ const AddProduct = () => {
             onChange={(e) => setDescription(e.target.value)}
             className="border p-2 rounded"
             required
-            disabled={mutation.isPending }
+            disabled={mutation.isPending}
           />
         </div>
 
@@ -157,7 +163,7 @@ const AddProduct = () => {
               htmlFor="upload-image"
               className="block text-sm font-medium text-gray-700"
             >
-              Upload image
+              Upload Image
             </label>
             {progress > 0 && uploadImage && (
               <div className="flex items-center gap-1">
@@ -181,7 +187,7 @@ const AddProduct = () => {
               <img
                 width={100}
                 src={uploadImageUrl}
-                alt="Uploaded Image"
+                alt="Uploaded preview"
                 className="object-cover rounded"
               />
             </div>
@@ -192,12 +198,13 @@ const AddProduct = () => {
             accept="image/*"
             onChange={(e) => {
               if (e.target.files && e.target.files[0]) {
-                setUploadImage(e.target.files[0]);
-                setUploadImageUrl(URL.createObjectURL(e.target.files[0]));
+                const file = e.target.files[0];
+                setUploadImage(file);
+                setUploadImageUrl(URL.createObjectURL(file));
               }
             }}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            disabled={mutation.isPending || mutation.isPending}
+            disabled={mutation.isPending}
           />
         </div>
 
@@ -207,34 +214,26 @@ const AddProduct = () => {
           {loadingCategories ? (
             <Spinner size="md" />
           ) : (
-            <div className="flex gap-2 flex-wrap">
-              {categories?.map((category: { id: string; name: string }) => (
-                <label key={category.id} className="flex gap-2 items-center">
-                  <input
-                    type="checkbox"
-                    value={category.id}
-                    checked={categoryIds.includes(category.id)}
-                    onChange={() => handleCategorySelect(category.id)}
-                    disabled={mutation.isPending }
-                  />
-                  {category.name}
-                </label>
-              ))}
-            </div>
+            <CreatableSelect
+              isMulti
+              isDisabled={mutation.isPending}
+              options={categories}
+              value={categories.filter((option) =>
+                categoryIds.includes(option.value)
+              )}
+              onChange={handleCategoryChange}
+              isPending={loadingCategories}
+              placeholder="Select or create categories"
+            />
           )}
         </div>
 
+        {/* Error Message */}
+        {error && <div className="text-red-500">{error}</div>}
+
         {/* Submit Button */}
-        <Button
-          type="submit"
-          variant="outline"
-          disabled={mutation.isPending }
-        >
-          {mutation.isPending  ? (
-            <Spinner size="sm" />
-          ) : (
-            "Add Product"
-          )}
+        <Button type="submit" variant="outline" disabled={mutation.isPending}>
+          {mutation.isPending ? <Spinner size="sm" /> : "Add Product"}
         </Button>
       </form>
     </div>

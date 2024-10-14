@@ -15,7 +15,7 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 type Product = {
   id: string;
   name: string;
-  category: string;  // Ensure this matches the API response structure
+  category: string; // Ensure this matches the API response structure
   price: string;
   stock: number;
 };
@@ -24,7 +24,10 @@ type Product = {
 export default function ProductsPage() {
   const [userSearch, setUserSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string } | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   // Query to fetch products
   const queryClient = useQueryClient();
@@ -51,7 +54,9 @@ export default function ProductsPage() {
         <div className="flex gap-2 items-center">
           <img
             className="h-10 w-10"
-            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${row.getValue("name")}`}
+            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${row.getValue(
+              "name"
+            )}`}
             alt="product-image"
           />
           <p>{row.getValue("name")}</p>
@@ -80,9 +85,15 @@ export default function ProductsPage() {
         return (
           <div className="flex gap-2">
             {/* Link to Edit product */}
-            <Link to={`/edit-product/${id}`}>
-              <Button variant="outline" size="sm">Edit</Button>
+            <Link
+              to={`/edit-product/${id}`}
+              state={{ product: row.original }} // Pass the product data as state
+            >
+              <Button variant="outline" size="sm">
+                Edit
+              </Button>
             </Link>
+
             {/* Button to Delete product */}
             <Button
               variant="outline"
@@ -126,7 +137,7 @@ export default function ProductsPage() {
       // Optionally fetch the product to confirm it exists
       const response = await axiosInstance.get(`/product/${id}`);
       if (!response.data) {
-        console.error('Product not found:', id);
+        console.error("Product not found:", id);
         return;
       }
 
@@ -137,7 +148,7 @@ export default function ProductsPage() {
       setModalOpen(false); // Close modal after deletion
       setSelectedProduct(null); // Clear selected product
 
-      // Invalidate and refetch the products  
+      // Invalidate and refetch the products
       queryClient.invalidateQueries<Product[]>({ queryKey: ["products"] }); // Refetch products to update the list
     } catch (err) {
       console.error("Failed to delete product:", err);
@@ -161,9 +172,11 @@ export default function ProductsPage() {
       <DataTable
         editLink="/edit-product"
         columns={columns} // Pass columns directly
-        data={filteredData} handleDelete={function (id: string): void {
+        data={filteredData}
+        handleDelete={function (id: string): void {
           throw new Error("Function not implemented.");
-        } }      />
+        }}
+      />
 
       {/* Confirmation Modal */}
       <ConfirmationModal
