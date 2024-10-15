@@ -1,6 +1,7 @@
 import { Box, CreditCard, DollarSign, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import BarChart from "@/components/BarChart";
+import LineChart from "@/components/LineChart";
 import SalesCard from "@/components/SalesCard";
 import Card, { CardContent } from "@/components/card";
 import PageTitle from "@/components/PageTitle";
@@ -79,9 +80,16 @@ export default function Home() {
 
       <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
         <CardContent>
-          <p className="p-4 font-semibold">Overview</p>
+          <p className="p-4 font-semibold">Revenue Overview (Bar Chart)</p>
           <BarChart />
         </CardContent>
+        <CardContent>
+          <p className="p-4 font-semibold">Revenue Trend (Line Chart)</p>
+          <LineChart />
+        </CardContent>
+      </section>
+
+      <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
         <CardContent className="flex gap-4">
           <section>
             <p>Recent Sales</p>
@@ -94,13 +102,12 @@ export default function Home() {
                   image={data.image}
                   email={data.email}
                   name={data.name}
-                  salesAmount={`+$${data.salesAmount}`}
+                  salesAmount={`${data.salesAmount}`}
                 />
               ))
             ) : (
               <p className="text-center text-gray-500 w-full h-full ">No recent data</p>
             )}
-
           </div>
         </CardContent>
       </section>

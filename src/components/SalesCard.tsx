@@ -23,7 +23,7 @@ export default function SalesCard({ name, email, salesAmount, image }: SalesProp
       </section>
 
       {/* Sales Amount */}
-      <p>{salesAmount}</p>
+      <p className="text-green-700">$ {salesAmount}</p>
     </div>
   );
 }
