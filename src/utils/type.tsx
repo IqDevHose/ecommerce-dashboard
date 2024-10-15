@@ -24,3 +24,17 @@ export interface UserT {
     newStatus: StatusT;
   }
   
+  export interface RecentSale {
+    id: string;
+    email: string;
+    image: string; // Change this to string
+    name: string;
+    salesAmount: number;
+  }
+
+  export type SalesProps = {
+    name: string;
+    email: string;
+    salesAmount: string;
+    image: string; // Change this to string
+  };

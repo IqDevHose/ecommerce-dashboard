@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/AxiosInstance";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/Spinner";
@@ -32,7 +32,7 @@ export default function LoginPage() {
         localStorage.setItem("userId", data.user.id);
         localStorage.setItem("email", data.user.email);
 
-        navigate("/"); // Redirect to home page
+        navigate("/"); 
       }
       else {
         setError("Only admin users can access this page.")
@@ -40,17 +40,28 @@ export default function LoginPage() {
 
     },
     onError: () => {
+      console.log("Error")
       setError("Invalid email or password.");
     },
   });
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     mutation.mutate({
       username: email,
       password,
     })
+  };
+
+  // Add these new functions to clear the error
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setError(null); // Clear error when email is changed
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setError(null); // Clear error when password is changed
   };
 
   return (
@@ -73,7 +84,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="you@example.com"
@@ -92,7 +103,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               required
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="••••••••"
@@ -114,9 +125,9 @@ export default function LoginPage() {
         <div className="text-sm text-center">
           <p>
             Don't have an account?{" "}
-            <a href="/register" className="text-indigo-600">
+            <Link to="/register" className="text-indigo-600">
               Sign Up
-            </a>
+            </Link>
           </p>
         </div>
       </div>

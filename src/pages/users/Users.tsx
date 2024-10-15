@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
@@ -6,16 +7,19 @@ import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/AxiosInstance";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { PencilIcon, PlusIcon, TrashIcon, UserIcon } from "lucide-react";
 
-type Payment = {
+type User = {
   id: string;
   name: string;
   email: string;
-  lastOrder: string;
-  method: string;
+  phone: string;
+  image: string; // This will be a base64 string
+  role: string;
 };
 
 export default function UsersPage() {
@@ -39,13 +43,15 @@ export default function UsersPage() {
     },
   });
 
+  const currentUserId = localStorage.getItem("userId"); // Assume this hook gives us the current user's info
+
   // Function to handle deletion
   const handleDelete = async (id: string) => {
     try {
       await axiosInstance.delete(`/users/${id}`);
       setModalOpen(false); // Close modal after deletion
       setSelectedUser(null); // Clear selected user
-      queryClient.invalidateQueries(["users"]); // Refetch users to update the list
+      queryClient.invalidateQueries({ queryKey: ["users"] }); // Refetch users to update the list
     } catch (err) {
       console.error("Failed to delete user:", err);
     }
@@ -67,27 +73,51 @@ export default function UsersPage() {
 
   // Filter users based on search input
   const filteredData = users?.filter(
-    (user: Payment) =>
-      user?.name?.includes(userSearch) ||
-      user?.email?.includes(userSearch) ||
-      user?.method?.includes(userSearch)
+    (user: User) =>
+      user?.name?.toLowerCase().includes(userSearch.toLowerCase()) ||
+      user?.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
+      user?.phone?.includes(userSearch)
   );
 
   // Define the columns for the table
-  const columns: ColumnDef<Payment>[] = [
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "image",
+      header: "Image",
+      cell: ({ row }) => {
+        const imageData = row.getValue("image") as string;
+        const isCurrentUser = row.original.id === currentUserId;
+        return (
+          <div className="relative">
+            <Avatar>
+              <AvatarImage
+                src={imageData ? `data:image/jpeg;base64,${imageData}` : undefined}
+                alt="user-image"
+              />
+              <AvatarFallback>{(row.getValue("name") as string)?.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            {isCurrentUser && (
+              <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1">
+                <UserIcon className="h-3 w-3 text-white" />
+              </div>
+            )}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: "name",
       header: "Name",
       cell: ({ row }) => {
-        const name = row.getValue("name");
+        const isCurrentUser = row.original.id === currentUserId;
         return (
-          <div className="flex gap-2 items-center">
-            <img
-              className="h-10 w-10"
-              src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${name}`}
-              alt="user-image"
-            />
-            <p>{name}</p>
+          <div className="flex items-center">
+            <span>{row.getValue("name")}</span>
+            {isCurrentUser && (
+              <Badge variant="success" className="ml-2">
+                Me
+              </Badge>
+            )}
           </div>
         );
       },
@@ -97,38 +127,47 @@ export default function UsersPage() {
       header: "Email",
     },
     {
-      accessorKey: "lastOrder",
-      header: "Last Order",
+      accessorKey: "phone",
+      header: "Phone",
     },
     {
-      accessorKey: "method",
-      header: "Method",
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => {
+        const role = row.getValue("role") as string;
+        return (
+          <Badge variant={role === "ADMIN" ? "blue" : "default"}>
+            {role}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: "actions",
       header: "Actions",
       cell: ({ row }) => {
         const id = row.original.id; // Access the user's ID
-        const name = row.getValue("name"); // Access the user's name
+        const name = row.getValue("name") as string; // Access the user's name
 
         return (
           <div className="flex gap-2">
             {/* Link to Edit user */}
             <Link to={`/edit-user/${id}`}>
-              <Button variant="outline" size="sm">
-                Edit
+              <Button variant="ghost" size="icon" className="text-blue-500 hover:text-blue-600">
+                <PencilIcon className="h-4 w-4" />
               </Button>
             </Link>
             {/* Button to Delete user */}
             <Button
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="icon"
+              className="text-red-500 hover:text-red-600"
               onClick={() => {
                 setSelectedUser({ id, name }); // Set selected user for deletion
                 setModalOpen(true); // Open confirmation modal
               }}
             >
-              Delete
+              <TrashIcon className="h-4 w-4" />
             </Button>
           </div>
         );
@@ -145,7 +184,12 @@ export default function UsersPage() {
         setSearchValue={setUserSearch}
         buttons={[
           <Link to="/new-user" key="add-user">
-            <Button variant="outline">Add User</Button>
+            {/* add plus icon */}
+            
+            <Button variant="default" className="flex items-center gap-1">
+              <PlusIcon className="w-4 h-4 mr-2" />
+              <span>Add User</span>
+            </Button>
           </Link>,
         ]}
       />

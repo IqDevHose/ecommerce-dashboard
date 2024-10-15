@@ -1,7 +1,6 @@
 // src/App.tsx
 
-import { Route, Routes, Navigate } from "react-router-dom";
-import Sidebar from "@/components/ui/sidebar"; // Ensure Sidebar is correctly imported
+import { Route, Routes } from "react-router-dom";
 import Home from "./pages/home/Home";
 import Users from "./pages/users/Users";
 import ProductsPage from "./pages/products/Products";
@@ -25,8 +24,7 @@ function App() {
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} /> {/* Register route */}
-      <Route path="*" element={<NotFound />} />
+      <Route path="/register" element={<RegisterPage />} />
       {/* Protected Routes */}
       <Route
         element={<ProtectedRoute />}
@@ -47,8 +45,6 @@ function App() {
 
       </Route>
 
-      {/* Redirect root to login if not authenticated */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* Optional: Catch-all route for unmatched paths */}
       <Route path="*" element={<NotFound />} />

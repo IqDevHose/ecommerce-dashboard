@@ -1,130 +1,160 @@
 import { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import axios from "axios";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type UserProfile = {
-  userId: string;
-  userRole: string;
-  userEmail: string;
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  phone: string;
+  image: string | null; // base64 string
 };
 
-type UserOrder = {
-  orderId: string;
-  orderDate: string;
-  orderTotal: number;
-};
-
-export default function Profile() {
+export default function Settings() {
   const [profileData, setProfileData] = useState<UserProfile>({
-    userId: "Not available",
-    userRole: "Not available",
-    userEmail: "Not available",
+    id: "",
+    name: "",
+    email: "",
+    role: "",
+    phone: "",
+    image: null,
   });
-  const [userOrders, setUserOrders] = useState<UserOrder[]>([]);
   const [editMode, setEditMode] = useState(false);
+  const [newImage, setNewImage] = useState<File | null>(null);
 
   useEffect(() => {
-    // Fetch user information from localStorage
-    const userId = localStorage.getItem("userId") || "Not available";
-    const userRole = localStorage.getItem("userRole") || "Not available";
-    const userEmail = localStorage.getItem("userEmail") || "Not available";
-
-    setProfileData({ userId, userRole, userEmail });
-
-    // Fetch user orders (assuming orders are stored in localStorage for demo purposes)
-    const orders: UserOrder[] = [
-      { orderId: "12345", orderDate: "2024-10-05", orderTotal: 59.99 },
-      { orderId: "12346", orderDate: "2024-10-07", orderTotal: 89.99 },
-    ];
-    setUserOrders(orders);
+    fetchUserData();
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await axios.get(`/api/users/${userId}`);
+      const userData = response.data;
+      
+      // Convert image buffer to base64 string if it exists
+      if (userData.image) {
+        userData.image = `data:image/jpeg;base64,${Buffer.from(userData.image).toString('base64')}`;
+      }
+      
+      setProfileData(userData);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSave = () => {
-    // Save updated data to localStorage or API call
-    localStorage.setItem("userEmail", profileData.userEmail);
-    // You could also send data to an API here
-    setEditMode(false); // Exit edit mode after saving
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewImage(e.target.files[0]);
+      
+      // Preview the new image
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target) {
+          setProfileData((prevData) => ({ ...prevData, image: event.target?.result as string }));
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const formData = new FormData();
+      Object.entries(profileData).forEach(([key, value]) => {
+        if (key !== 'image' && value !== null) {
+          formData.append(key, value);
+        }
+      });
+      if (newImage) {
+        formData.append("image", newImage);
+      }
+
+      await axios.put(`/api/users/${profileData.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setEditMode(false);
+      fetchUserData(); // Refresh data after update
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
   };
 
   return (
-    <div className="flex flex-col items-center p-6 space-y-8 w-full max-w-3xl mx-auto">
-      <PageTitle title="User Profile" />
+    <div className="container mx-auto p-6">
+      <PageTitle title="User Settings" />
       
-      {/* Profile Information Section */}
-      <div className="p-8 bg-gray-50 rounded-lg shadow-lg w-full max-w-md space-y-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Profile Information</h2>
-        <ul className="space-y-3">
-          <li className="flex justify-between items-center">
-            <span className="font-medium text-gray-600">User ID:</span>
-            <span>{profileData.userId}</span>
-          </li>
-          <li className="flex justify-between items-center">
-            <span className="font-medium text-gray-600">Role:</span>
-            <span>{profileData.userRole}</span>
-          </li>
-          <li className="flex justify-between items-center">
-            <span className="font-medium text-gray-600">Email:</span>
-            {editMode ? (
-              <input
-                type="email"
-                name="userEmail"
-                value={profileData.userEmail}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md p-2 text-sm"
-              />
-            ) : (
-              <span>{profileData.userEmail}</span>
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Profile Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={profileData.image || undefined} alt={profileData.name} />
+              <AvatarFallback>{profileData.name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            {editMode && (
+              <Input type="file" onChange={handleImageChange} accept="image/*" />
             )}
-          </li>
-        </ul>
+          </div>
 
-        {editMode ? (
-          <button
-            onClick={handleSave}
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full mt-4"
-          >
-            Save Changes
-          </button>
-        ) : (
-          <button
-            onClick={() => setEditMode(true)}
-            className="bg-gray-500 text-white py-2 px-4 rounded-lg w-full mt-4"
-          >
-            Edit Profile
-          </button>
-        )}
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              name="name"
+              value={profileData.name}
+              onChange={handleInputChange}
+              disabled={!editMode}
+            />
+          </div>
 
-      {/* Orders Section */}
-      <div className="p-8 bg-gray-50 rounded-lg shadow-lg w-full max-w-md space-y-4">
-        <h2 className="text-2xl font-semibold text-gray-800">User Orders</h2>
-        {userOrders.length > 0 ? (
-          <ul className="space-y-4">
-            {userOrders.map((order) => (
-              <li key={order.orderId} className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Order ID:</span>
-                  <span>{order.orderId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Order Date:</span>
-                  <span>{order.orderDate}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Order Total:</span>
-                  <span>${order.orderTotal.toFixed(2)}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">No orders available.</p>
-        )}
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              value={profileData.email}
+              onChange={handleInputChange}
+              disabled={!editMode}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone</Label>
+            <Input
+              id="phone"
+              name="phone"
+              value={profileData.phone}
+              onChange={handleInputChange}
+              disabled={!editMode}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="role">Role</Label>
+            <Input id="role" value={profileData.role} disabled />
+          </div>
+
+          {editMode ? (
+            <Button onClick={handleSave}>Save Changes</Button>
+          ) : (
+            <Button onClick={() => setEditMode(true)}>Edit Profile</Button>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

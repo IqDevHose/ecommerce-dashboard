@@ -1,65 +1,61 @@
-import { Activity, CreditCard, DollarSign, Users } from "lucide-react";
+import { CreditCard, DollarSign, Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import BarChart from "@/components/BarChart";
 import SalesCard from "@/components/SalesCard";
 import Card, { CardContent } from "@/components/card";
 import PageTitle from "@/components/PageTitle";
+import axiosInstance from "@/utils/AxiosInstance";
+import { RecentSale } from "@/utils/type";
 
-const cardData = [
-  {
-    label: "Total Revenue",
-    amount: "$45,231.89",
-    description: "+20.1% from last month",
-    icon: DollarSign,
-  },
-  {
-    label: "Subscription",
-    amount: "+2350",
-    description: "+180.1% from last month",
-    icon: Users,
-  },
-  {
-    label: "Sales",
-    amount: "+12,234",
-    description: "+19% from last month",
-    icon: CreditCard,
-  },
-  {
-    label: "Active Now",
-    amount: "+573",
-    description: "+201 from last month",
-    icon: Activity,
-  },
-];
-
-const userSalesData = [
-  {
-    name: "Olivia Martin",
-    email: "olivia.martin@email.com",
-    salesAmount: "+$1,999.00",
-  },
-  {
-    name: "Jackson Lee",
-    email: "jackson.lee@email.com",
-    salesAmount: "+$1,999.00",
-  },
-  {
-    name: "Isabella Nguyen",
-    email: "isabella.nguyen@email.com",
-    salesAmount: "+$39.00",
-  },
-  {
-    name: "William Kim",
-    email: "will@email.com",
-    salesAmount: "+$299.00",
-  },
-  {
-    name: "Sofia Davis",
-    email: "sofia.davis@email.com",
-    salesAmount: "+$39.00",
-  },
-];
+// API functions
+const fetchOrderStats = () => axiosInstance.get('/statics/order-stats').then(res => res.data);
+const fetchRevenueStats = () => axiosInstance.get('/statics/revenue-stats').then(res => res.data);
+const fetchSalesStats = () => axiosInstance.get('/statics/sales-stats').then(res => res.data);
+const fetchRecentSales = ()=> axiosInstance.get('/statics/recent-sales').then(res => res.data);
 
 export default function Home() {
+  const { data: orderStats } = useQuery({
+    queryKey: ['orderStats'],
+    queryFn: fetchOrderStats,
+  });
+
+  const { data: revenueStats } = useQuery({
+    queryKey: ['revenueStats'],
+    queryFn: fetchRevenueStats,
+  });
+
+  const { data: salesStats } = useQuery({
+    queryKey: ['salesStats'],
+    queryFn: fetchSalesStats,
+  });
+
+  const { data: recentSales,isPending } = useQuery({
+    queryKey: ['recentSales'],
+    queryFn: fetchRecentSales,
+  });
+
+  const cardData = [
+    {
+      label: "Total Revenue",
+      amount: revenueStats ? `$${revenueStats.totalRevenue.toFixed(2)}` : "Loading...",
+      description: "From shipped and delivered orders",
+      icon: DollarSign,
+    },
+    {
+      label: "Total Orders",
+      amount: orderStats ? orderStats.totalOrders.toString() : "Loading...",
+      description: `${orderStats?.pendingOrders || 0} pending`,
+      icon: Users,
+    },
+    {
+      label: "Total Sales",
+      amount: salesStats ? salesStats.totalSales.toString() : "Loading...",
+      description: "Items sold",
+      icon: CreditCard,
+    },
+   
+  ];
+
   return (
     <div className="flex p-10 flex-col gap-5 w-full">
       <PageTitle title="Dashboard" />
@@ -83,18 +79,20 @@ export default function Home() {
         <CardContent className="flex justify-between gap-4">
           <section>
             <p>Recent Sales</p>
-            <p className="text-sm text-gray-400">
-              You made 265 sales this month.
-            </p>
           </section>
-          {userSalesData.map((data, index) => (
-            <SalesCard
-              key={index}
-              email={data.email}
-              name={data.name}
-              salesAmount={data.salesAmount}
-            />
-          ))}
+          {recentSales && recentSales.length > 0 ? (
+            recentSales.map((data:RecentSale) => (
+              <SalesCard
+                key={data.id}
+                image={data.image}
+                email={data.email}
+                name={data.name}
+                salesAmount={`+$${data.salesAmount}`}
+              />
+            ))
+          ) : (
+            <p className="text-center text-gray-500 w-full h-full ">No recent data</p>
+          )}
         </CardContent>
       </section>
     </div>
