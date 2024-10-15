@@ -17,11 +17,10 @@ const ProtectedRoute = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 md:ml-64 p-4">
         <Outlet />
       </div>
     </div>
-
   );
 };
 

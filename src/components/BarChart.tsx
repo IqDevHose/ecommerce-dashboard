@@ -19,7 +19,6 @@ const BarChart: React.FC = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching data</div>;
-  console.log(monthlyRevenue);
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarGraph data={monthlyRevenue}>
