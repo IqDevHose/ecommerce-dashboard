@@ -1,12 +1,12 @@
 import React from "react";
-import { Bar, ResponsiveContainer } from "recharts";
+import { Bar, ResponsiveContainer, Tooltip } from "recharts";
 import { BarChart as BarGraph, XAxis, YAxis } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/AxiosInstance";
 
 interface MonthlyRevenue {
-  name: string;
-  total: number;
+  month: string;
+  totalRevenueInThisMonth: number;
 }
 
 const fetchMonthlyRevenue = () => axiosInstance.get<MonthlyRevenue[]>('/statics/monthly-revenue').then(res => res.data);
@@ -19,12 +19,12 @@ const BarChart: React.FC = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching data</div>;
-
+  console.log(monthlyRevenue);
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarGraph data={monthlyRevenue}>
         <XAxis
-          dataKey="name"
+          dataKey="month"
           tickLine={false}
           axisLine={false}
           stroke="#888888"
@@ -37,7 +37,21 @@ const BarChart: React.FC = () => {
           fontSize={12}
           tickFormatter={(value) => `$${value}`}
         />
-        <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="#8884d8" />
+        <Tooltip
+          cursor={{ fill: 'rgba(136, 132, 216, 0.1)' }}
+          content={({ active, payload }) => {
+            if (active && payload && payload.length) {
+              return (
+                <div className="bg-white p-2 border border-gray-300 rounded shadow">
+                  <p className="font-bold">{payload[0].payload.month}</p>
+                  <p>Revenue: ${payload[0].value}</p>
+                </div>
+              );
+            }
+            return null;
+          }}
+        />
+        <Bar dataKey="totalRevenueInThisMonth" radius={[4, 4, 0, 0]} fill="#8884d8" />
       </BarGraph>
     </ResponsiveContainer>
   );
