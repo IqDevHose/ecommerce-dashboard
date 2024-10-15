@@ -1,190 +1,194 @@
-import axiosInstance from "@/utils/AxiosInstance";
-import { OrderT, StatusT, UserT } from "@/utils/type";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@radix-ui/react-dropdown-menu";
+import { DataTable } from "@/components/DataTable";
+import Options from "@/components/Options";
+import PageTitle from "@/components/PageTitle";
+import Spinner from "@/components/Spinner";
+import axiosInstance from "@/utils/AxiosInstance";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const Orders = () => {
-  const [selectedUser, setSelectedUser] = useState<string>("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const queryClient = useQueryClient();
-
-  const UpdateOrderStatusParams: StatusT[] = [
-    "PENDING",
-    "SHIPPED",
-    "DELIVERED",
-    "CANCELLED",
-  ];
-
-  // Fetch users with useQuery
-  const { data: users = [], isLoading: usersLoading } = useQuery<UserT[]>({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const response = await axiosInstance.get("users");
-      return response.data;
-    },
-  });
-
-  // Fetch orders with useQuery
-  const { data: orders = [], isLoading: ordersLoading } = useQuery<OrderT[]>({
-    queryKey: ["orders"],
-    queryFn: async () => {
-      const response = await axiosInstance.get("order");
-      return response.data;
-    },
-  });
-
-  // Filter orders based on selected user and status
-  const filteredOrders = orders.filter((order) => {
-    const userMatch = selectedUser ? order.userId === selectedUser : true;
-    const statusMatch = selectedStatus ? order.status === selectedStatus : true;
-    return userMatch && statusMatch;
-  });
-
-  // Mutation to update the order status
-  const mutation = useMutation({
-    mutationFn: async ({
-      orderId,
-      newStatus,
-    }: {
-      orderId: string;
-      newStatus: StatusT;
-    }) => {
-      await axiosInstance.put(`order/${orderId}`, { status: newStatus });
-    },
-    onSuccess: () => {
-      // Invalidate and refetch orders after updating the status
-      queryClient.invalidateQueries(["orders"]);
-    },
-    onError: (error) => {
-      // Handle error here (e.g., show a notification)
-      console.error("Error updating order status:", error);
-    },
-  });
-
-  // Function to handle order status change
-  const updateOrderStatus = (orderId: string, newStatus: StatusT) => {
-    mutation.mutate({ orderId, newStatus });
-  };
-
-  if (usersLoading || ordersLoading) return <p>Loading...</p>;
-
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Orders</h1>
-      <div className="flex flex-row gap-4">
-        <div className="mb-4">
-          <select
-            id="userSelect"
-            value={selectedUser}
-            onChange={(e) => setSelectedUser(e.target.value)}
-            className="p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All Users</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <select
-            id="statusSelect"
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="p-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All Statuses</option>
-            {UpdateOrderStatusParams.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="overflow-x-auto shadow-md rounded-lg">
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border-b border-gray-300 p-4 text-left">User Name</th>
-              <th className="border-b border-gray-300 p-4 text-left">Order Items</th>
-              <th className="border-b border-gray-300 p-4 text-left">Current Status</th>
-              <th className="border-b border-gray-300 p-4 text-left">Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOrders.map((order) => (
-              <tr key={order.id} className="hover:bg-gray-50 transition">
-                <td className="border-b border-gray-300 p-4">
-                  {users.find((user) => user.id === order.userId)?.name}
-                </td>
-                <td className="border-b border-gray-300 p-4">
-                  {order.orderItems.map((item) => (
-                    <div key={item.id}>{item.name}</div>
-                  ))}
-                </td>
-                <td className="border-b border-gray-300 p-4">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="p-2 border-none outline-none  rounded-md cursor-pointer">
-                      <Badge
-                        variant={
-                          order.status === "PENDING"
-                            ? "warning"
-                            : order.status === "CANCELLED"
-                            ? "destructive"
-                            : order.status === "DELIVERED"
-                            ? "done"
-                            : order.status === "SHIPPED"
-                            ? "success" // Assuming you have a "primary" variant for shipped
-                            : "default" // Fallback variant
-                        }
-                      >
-                        {order.status}
-                      </Badge>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white  rounded-md shadow-lg">
-                      {UpdateOrderStatusParams.map((status) => (
-                        <DropdownMenuItem
-                          key={status}
-                          onClick={() =>
-                            updateOrderStatus(order.id, status as StatusT)
-                          }
-                          className="cursor-pointer px-2 py-1 hover:bg-gray-200"
-                        >
-                          {status}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </td>
-                <td className="border-b p-4">{order.createdAt}</td>
-              </tr>
-            ))}
-            {filteredOrders.length === 0 && (
-              <tr>
-                <td
-                  colSpan={4}
-                  className="border-b border-gray-300 p-4 text-center"
-                >
-                  No orders found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+type Order = {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  total: number;
+  status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  createdAt: string;
+  updatedAt: string;
+  orderItems: {
+    id: string;
+    productId: string;
+    quantity: number;
+    price: number;
+    product: {
+      name: string;
+    };
+  }[];
 };
 
-export default Orders;
+export default function OrdersPage() {
+  const [orderSearch, setOrderSearch] = useState("");
+
+  // Query to fetch orders
+  const {
+    data: orders,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/order");
+      return res.data;
+    },
+  });
+
+  const queryClient = useQueryClient();
+
+  // Mutation to update order status
+  const updateOrderStatus = useMutation({
+    mutationFn: async ({ orderId, newStatus }: { orderId: string; newStatus: Order['status'] }) => {
+      const response = await axiosInstance.put(`/order/${orderId}`, { status: newStatus });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+  });
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        <Spinner size="md" />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-full self-center mx-auto">
+        Error loading orders
+      </div>
+    );
+
+  // Filter orders based on search input
+  const filteredData = orders?.filter(
+    (order: Order) =>
+      order?.name?.toLowerCase().includes(orderSearch.toLowerCase()) ||
+      order?.email?.toLowerCase().includes(orderSearch.toLowerCase()) ||
+      order?.phoneNumber?.includes(orderSearch)
+  );
+
+  // Define the columns for the table
+  const columns: ColumnDef<Order>[] = [
+    {
+      accessorKey: "name",
+      header: "Customer Name",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      accessorKey: "phoneNumber",
+      header: "Phone",
+    },
+    {
+      accessorKey: "total",
+      header: "Total",
+      cell: ({ row }) => {
+        return <span>${row.getValue("total")}</span>;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as Order["status"];
+        const orderId = row.original.id;
+
+        return (
+          <Select
+            defaultValue={status}
+            onValueChange={(newStatus) => {
+              updateOrderStatus.mutate({ orderId, newStatus: newStatus as Order['status'] });
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue>
+                <Badge
+                  variant={
+                    status === "PENDING"
+                      ? "warning"
+                      : status === "SHIPPED"
+                      ? "default"
+                      : status === "DELIVERED"
+                      ? "success"
+                      : "destructive"
+                  }
+                >
+                  {status}
+                </Badge>
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="PENDING">PENDING</SelectItem>
+              <SelectItem value="SHIPPED">SHIPPED</SelectItem>
+              <SelectItem value="DELIVERED">DELIVERED</SelectItem>
+              <SelectItem value="CANCELLED">CANCELLED</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Order Date",
+      cell: ({ row }) => {
+        return new Date(row.getValue("createdAt")).toLocaleDateString();
+      },
+    },
+    {
+      accessorKey: "orderItems",
+      header: "Items",
+      cell: ({ row }) => {
+        const orderItems = row.original.orderItems;
+        return (
+          <div>
+            {orderItems.map((item, index) => (
+              <div key={item.id}>
+                {item.product.name} (x{item.quantity})
+                {index < orderItems.length - 1 && ", "}
+              </div>
+            ))}
+          </div>
+        );
+      },
+    },
+  ];
+
+  return (
+    <div className="flex flex-col overflow-hidden p-10 gap-5 w-full">
+      <PageTitle title="Orders" />
+      <Options
+        haveSearch={true}
+        searchValue={orderSearch}
+        // add pading to the search
+        setSearchValue={setOrderSearch}
+        buttons={[]} // Add this line
+      />
+      {/* Pass the filtered data to the DataTable */}
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        handleDelete={function (id: string): void {
+          throw new Error("Function not implemented.");
+        }}
+        editLink="/orders/edit" // Add this line
+      />
+    </div>
+  );
+}

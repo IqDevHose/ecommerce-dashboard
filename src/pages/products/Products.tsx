@@ -1,7 +1,6 @@
 import { DataTable } from "@/components/DataTable";
 import Options from "@/components/Options";
 import PageTitle from "@/components/PageTitle";
-import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/AxiosInstance";
 import { useQuery } from "@tanstack/react-query";
@@ -10,12 +9,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import Loading from "@/components/Loading";
+import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+type Category = {
+  id: string;
+  name: string;
+};
 // Define the Product type
 type Product = {
   id: string;
   name: string;
-  category: string; // Ensure this matches the API response structure
+  image: string; // base64
+  category: Category[]; // Ensure this matches the API response structure
   price: string;
   stock: number;
 };
@@ -33,7 +41,7 @@ export default function ProductsPage() {
   const queryClient = useQueryClient();
   const {
     data: products,
-    isLoading,
+    isPending,
     error,
   } = useQuery({
     queryKey: ["products"],
@@ -52,13 +60,12 @@ export default function ProductsPage() {
       header: "Product Name",
       cell: ({ row }) => (
         <div className="flex gap-2 items-center">
-          <img
-            className="h-10 w-10"
-            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${row.getValue(
-              "name"
-            )}`}
-            alt="product-image"
-          />
+          <Avatar className="h-16 w-16">
+            <AvatarImage src={row.original.image} alt="product-image" />
+            <AvatarFallback>
+              {row.original.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
           <p>{row.getValue("name")}</p>
         </div>
       ),
@@ -66,6 +73,15 @@ export default function ProductsPage() {
     {
       accessorKey: "category",
       header: "Category",
+      cell: ({ row }) => (
+        <div className="flex gap-2 items-center">
+          <div className="flex gap-2">
+            {row.original.category.map((category: Category) => (
+              <Badge variant={"outline"} key={category.id}>{category.name}</Badge>
+            ))}
+          </div>
+        </div>
+      ),
     },
     {
       accessorKey: "price",
@@ -85,25 +101,22 @@ export default function ProductsPage() {
         return (
           <div className="flex gap-2">
             {/* Link to Edit product */}
-            <Link
-              to={`/edit-product/${id}`}
-              state={{ product: row.original }} // Pass the product data as state
-            >
-              <Button variant="outline" size="sm">
-                Edit
+            <Link to={`/edit-product/${id}`} state={{ product: row.original }}>
+              <Button variant="ghost" size="icon" className="text-blue-500 hover:text-blue-600">
+                <PencilIcon className="h-4 w-4" />
               </Button>
             </Link>
-
             {/* Button to Delete product */}
             <Button
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="icon"
+              className="text-red-500 hover:text-red-600"
               onClick={() => {
                 setSelectedProduct({ id, name }); // Set selected product for deletion
                 setModalOpen(true); // Open confirmation modal
               }}
             >
-              Delete
+              <TrashIcon className="h-4 w-4" />
             </Button>
           </div>
         );
@@ -112,11 +125,9 @@ export default function ProductsPage() {
   ];
 
   // Loading state
-  if (isLoading)
+  if (isPending)
     return (
-      <div className="flex justify-center items-center h-full self-center mx-auto">
-        <Spinner size="md" />
-      </div>
+      <Loading />
     );
 
   // Error state
@@ -149,7 +160,7 @@ export default function ProductsPage() {
       setSelectedProduct(null); // Clear selected product
 
       // Invalidate and refetch the products
-      queryClient.invalidateQueries<Product[]>({ queryKey: ["products"] }); // Refetch products to update the list
+      queryClient.invalidateQueries({ queryKey: ["products"] }); // Refetch products to update the list
     } catch (err) {
       console.error("Failed to delete product:", err);
     }
@@ -164,7 +175,10 @@ export default function ProductsPage() {
         setSearchValue={setUserSearch}
         buttons={[
           <Link to={"/new-product"} key="add-product">
-            <Button variant={"outline"}>Add Product</Button>
+            <Button variant={"default"} className="flex items-center gap-1">
+              <PlusIcon className="w-4 h-4" />
+              <span>Add Product</span>
+            </Button>
           </Link>,
         ]}
       />

@@ -86,7 +86,6 @@ export default function UsersPage() {
       header: "Image",
       cell: ({ row }) => {
         const imageData = row.getValue("image") as string;
-        const isCurrentUser = row.original.id === currentUserId;
         return (
           <div className="relative">
             <Avatar>
@@ -96,11 +95,7 @@ export default function UsersPage() {
               />
               <AvatarFallback>{(row.getValue("name") as string)?.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
-            {isCurrentUser && (
-              <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1">
-                <UserIcon className="h-3 w-3 text-white" />
-              </div>
-            )}
+            
           </div>
         );
       },
@@ -111,10 +106,10 @@ export default function UsersPage() {
       cell: ({ row }) => {
         const isCurrentUser = row.original.id === currentUserId;
         return (
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             <span>{row.getValue("name")}</span>
             {isCurrentUser && (
-              <Badge variant="success" className="ml-2">
+              <Badge variant="outline">
                 Me
               </Badge>
             )}
@@ -187,7 +182,7 @@ export default function UsersPage() {
             {/* add plus icon */}
             
             <Button variant="default" className="flex items-center gap-1">
-              <PlusIcon className="w-4 h-4 mr-2" />
+              <PlusIcon className="w-4 h-4" />
               <span>Add User</span>
             </Button>
           </Link>,

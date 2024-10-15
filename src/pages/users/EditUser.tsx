@@ -214,6 +214,12 @@ const EditUser = () => {
         </div>
 
         <div className="flex flex-col gap-2">
+          {imagePreview && (
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={imagePreview} alt="Preview" />
+              <AvatarFallback>Preview</AvatarFallback>
+            </Avatar>
+          )}
           <label htmlFor="image">Profile Image</label>
           <Input
             id="image"
@@ -223,12 +229,6 @@ const EditUser = () => {
             accept="image/*"
             disabled={mutation.isPending}
           />
-          {imagePreview && (
-            <Avatar className="w-24 h-24">
-              <AvatarImage src={imagePreview} alt="Preview" />
-              <AvatarFallback>Preview</AvatarFallback>
-            </Avatar>
-          )}
         </div>
 
         <div className="flex justify-between items-center">

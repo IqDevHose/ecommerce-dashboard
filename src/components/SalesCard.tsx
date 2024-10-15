@@ -5,7 +5,7 @@ export default function SalesCard({ name, email, salesAmount, image }: SalesProp
   return (
     <div className="flex flex-wrap justify-between gap-3">
       <section className="flex justify-between gap-3">
-        <Avatar>
+        <Avatar className="w-10 h-10">
           {image ? (
             <AvatarImage src={image} alt={name} />
           ) : (

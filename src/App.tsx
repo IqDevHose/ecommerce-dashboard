@@ -12,10 +12,10 @@ import AddUser from "./pages/users/AddUser";
 import EditUser from "./pages/users/EditUser";
 
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
-import EditProduct from "./pages/products/EditProdect";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
+import EditProduct from "./pages/products/EditProduct";
 
 
 

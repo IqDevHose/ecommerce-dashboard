@@ -1,4 +1,4 @@
-import { CreditCard, DollarSign, Users } from "lucide-react";
+import { Box, CreditCard, DollarSign, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import BarChart from "@/components/BarChart";
 import SalesCard from "@/components/SalesCard";
@@ -11,7 +11,7 @@ import { RecentSale } from "@/utils/type";
 const fetchOrderStats = () => axiosInstance.get('/statics/order-stats').then(res => res.data);
 const fetchRevenueStats = () => axiosInstance.get('/statics/revenue-stats').then(res => res.data);
 const fetchSalesStats = () => axiosInstance.get('/statics/sales-stats').then(res => res.data);
-const fetchRecentSales = ()=> axiosInstance.get('/statics/recent-sales').then(res => res.data);
+const fetchRecentSales = () => axiosInstance.get('/statics/recent-sales').then(res => res.data);
 
 export default function Home() {
   const { data: orderStats } = useQuery({
@@ -29,7 +29,7 @@ export default function Home() {
     queryFn: fetchSalesStats,
   });
 
-  const { data: recentSales,isPending } = useQuery({
+  const { data: recentSales } = useQuery({
     queryKey: ['recentSales'],
     queryFn: fetchRecentSales,
   });
@@ -53,7 +53,13 @@ export default function Home() {
       description: "Items sold",
       icon: CreditCard,
     },
-   
+    {
+      label: "Total Products",
+      amount: orderStats ? orderStats.totalProducts.toString() : "Loading...",
+      description: "Items in stock",
+      icon: Box,
+    },
+
   ];
 
   return (
@@ -76,23 +82,26 @@ export default function Home() {
           <p className="p-4 font-semibold">Overview</p>
           <BarChart />
         </CardContent>
-        <CardContent className="flex justify-between gap-4">
+        <CardContent className="flex gap-4">
           <section>
             <p>Recent Sales</p>
           </section>
-          {recentSales && recentSales.length > 0 ? (
-            recentSales.map((data:RecentSale) => (
-              <SalesCard
-                key={data.id}
-                image={data.image}
-                email={data.email}
-                name={data.name}
-                salesAmount={`+$${data.salesAmount}`}
-              />
-            ))
-          ) : (
-            <p className="text-center text-gray-500 w-full h-full ">No recent data</p>
-          )}
+          <div className="space-y-4">
+            {recentSales && recentSales.length > 0 ? (
+              recentSales.map((data: RecentSale) => (
+                <SalesCard
+                  key={data.id}
+                  image={data.image}
+                  email={data.email}
+                  name={data.name}
+                  salesAmount={`+$${data.salesAmount}`}
+                />
+              ))
+            ) : (
+              <p className="text-center text-gray-500 w-full h-full ">No recent data</p>
+            )}
+
+          </div>
         </CardContent>
       </section>
     </div>
