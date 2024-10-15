@@ -18,6 +18,7 @@ type Category = {
   id: string;
   name: string;
 };
+
 // Define the Product type
 type Product = {
   id: string;
@@ -73,15 +74,28 @@ export default function ProductsPage() {
     {
       accessorKey: "category",
       header: "Category",
-      cell: ({ row }) => (
-        <div className="flex gap-2 items-center">
-          <div className="flex gap-2">
-            {row.original.category.map((category: Category) => (
-              <Badge variant={"outline"} key={category.id}>{category.name}</Badge>
-            ))}
+      cell: ({ row }) => {
+        const categories = row.original.category;
+
+        return (
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2 items-center">
+              <div className="flex gap-2">
+                {categories.slice(0, 3).map((category: Category) => (
+                  <Badge variant={"outline"} key={category.id}>
+                    {category.name}
+                  </Badge>
+                ))}
+                {categories.length > 3 && (
+                  <Badge variant={"outline"}>
+                    <span>...</span>
+                  </Badge>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       accessorKey: "price",
@@ -125,18 +139,10 @@ export default function ProductsPage() {
   ];
 
   // Loading state
-  if (isPending)
-    return (
-      <Loading />
-    );
+  if (isPending) return <Loading />;
 
   // Error state
-  if (error)
-    return (
-      <div className="flex justify-center items-center h-full self-center mx-auto">
-        Error loading products
-      </div>
-    );
+  if (error) return <div className="flex justify-center items-center h-full self-center mx-auto">Error loading products</div>;
 
   // Search functionality
   const filteredData = products?.filter((product: Product) =>
