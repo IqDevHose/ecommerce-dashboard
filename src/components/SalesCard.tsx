@@ -13,6 +13,7 @@ export default function SalesCard({ name, email, salesAmount, image }: SalesProp
           )}
         </Avatar>
 
+
         {/* Name and Email */}
         <div className="text-sm">
           <p>{name}</p>
