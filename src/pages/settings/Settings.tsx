@@ -3,13 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import PageTitle from "@/components/PageTitle";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axiosInstance from "@/utils/AxiosInstance";
+import { useToast } from "@/hooks/use-toast";
 
 const userProfileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -21,6 +21,7 @@ const userProfileSchema = z.object({
 type UserProfileFormData = z.infer<typeof userProfileSchema>;
 
 export default function Settings() {
+  const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
   const [newImage, setNewImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
@@ -55,31 +56,44 @@ export default function Settings() {
         phone: profileData.phone,
         password: "", // Reset password field
       });
-      setImagePreview(profileData?.image ? `data:image/jpeg;base64,${profileData.image}` : undefined);
+      setImagePreview(profileData?.image);
     }
   }, [profileData, reset]);
 
   const updateProfileMutation = useMutation({
-    mutationFn: async (data: UserProfileFormData) => {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value) formData.append(key, value);
-      });
-      if (newImage) {
-        formData.append("image", newImage);
-      }
-      return axiosInstance.put(`/users/${userId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+    mutationFn: async (data: UserProfileFormData & { image?: string }) => {
+      return axiosInstance.put(`/users/${userId}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey:["userProfile", userId]});
       setEditMode(false);
+      toast({
+        title: "Profile updated successfully",
+        description: "Your profile information has been updated.",
+      });
     },
   });
 
-  const onSubmit = (data: UserProfileFormData) => {
-    updateProfileMutation.mutate(data);
+  const onSubmit = async (data: UserProfileFormData) => {
+    let imageBase64: string | undefined;
+
+    if (newImage) {
+      imageBase64 = await convertToBase64(newImage);
+    }
+
+    updateProfileMutation.mutate({
+      ...data,
+      image: imageBase64,
+    });
+  };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +112,7 @@ export default function Settings() {
     setEditMode(false);
     reset();
     setNewImage(null);
-    setImagePreview(profileData?.image ? `data:image/jpeg;base64,${profileData.image}` : undefined);
+    setImagePreview(profileData?.image ? profileData.image : undefined);
   };
 
   if (isLoading) {

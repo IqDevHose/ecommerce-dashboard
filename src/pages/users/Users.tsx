@@ -90,7 +90,7 @@ export default function UsersPage() {
           <div className="relative">
             <Avatar>
               <AvatarImage
-                src={imageData ? `data:image/jpeg;base64,${imageData}` : undefined}
+                src={imageData}
                 alt="user-image"
               />
               <AvatarFallback>{(row.getValue("name") as string)?.charAt(0).toUpperCase()}</AvatarFallback>

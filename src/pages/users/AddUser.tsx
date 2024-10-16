@@ -20,20 +20,21 @@ const schema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirm: z.string(),
   role: z.enum(["ADMIN", "USER"]),
+  image: z.string().optional(),
 }).refine((data) => data.password === data.confirm, {
   message: "Passwords do not match",
   path: ["confirm"],
 });
 
 type FormData = z.infer<typeof schema>;
+
 const AddUser = () => {
-  const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { control, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       role: "USER",
@@ -43,14 +44,7 @@ const AddUser = () => {
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
       const { confirm, ...dataToSend } = data;
-      const formData = new FormData();
-      Object.entries(dataToSend).forEach(([key, value]) => {
-        if (value) formData.append(key, value);
-      });
-      if (image) formData.append('image', image);
-      return await axiosInstance.post("/users", formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      return await axiosInstance.post("/users", dataToSend);
     },
     onSuccess: () => {
       navigate("/users");
@@ -60,10 +54,11 @@ const AddUser = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const base64String = reader.result as string;
+        setImagePreview(base64String);
+        setValue('image', base64String);
       };
       reader.readAsDataURL(file);
     }

@@ -20,6 +20,7 @@ const schema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters").optional().or(z.literal('')),
   confirm: z.string().optional().or(z.literal('')),
   role: z.enum(["ADMIN", "USER"]),
+  image: z.string().optional(),
 }).refine((data) => data.password === data.confirm, {
   message: "Passwords do not match",
   path: ["confirm"],
@@ -31,13 +32,11 @@ const EditUser = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       role: "USER",
@@ -61,21 +60,14 @@ const EditUser = () => {
         phone: user.phone || "",
         role: user.role,
       });
-      setImagePreview(user.image ? `data:image/jpeg;base64,${user.image}` : null);
+      setImagePreview(user.image ? user.image : null);
     }
   }, [user, reset]);
 
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
       const { confirm, ...dataToSend } = data;
-      const formData = new FormData();
-      Object.entries(dataToSend).forEach(([key, value]) => {
-        if (value) formData.append(key, value);
-      });
-      if (image) formData.append('image', image);
-      await axiosInstance.put(`/users/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      return await axiosInstance.put(`/users/${id}`, dataToSend);
     },
     onSuccess: () => {
       navigate("/users");
@@ -85,10 +77,11 @@ const EditUser = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const base64String = reader.result as string;
+        setImagePreview(base64String);
+        setValue('image', base64String);
       };
       reader.readAsDataURL(file);
     }

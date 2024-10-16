@@ -38,7 +38,7 @@ export default function Home() {
   const cardData = [
     {
       label: "Total Revenue",
-      amount: revenueStats ? `$${revenueStats.totalRevenue.toFixed(2)}` : "Loading...",
+      amount: revenueStats ? `$${revenueStats.totalRevenue}` : "Loading...",
       description: "From shipped and delivered orders",
       icon: DollarSign,
     },
