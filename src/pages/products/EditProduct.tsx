@@ -12,12 +12,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import CreatableSelect from "react-select/creatable";
 import { ActionMeta, MultiValue } from 'react-select';
+import { Switch } from "@/components/ui/switch";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   price: z.number().nonnegative("Price must be a non-negative number"),
   categories: z.array(z.string()).nonempty("At least one category is required"),
+  published: z.boolean(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -54,6 +56,7 @@ const EditProduct = () => {
         description: product.description,
         price: product.price,
         categories: product.categories,
+        published: product.published,
       });
       setImagePreview(product.image ? product.image : null);
     }
@@ -192,6 +195,23 @@ const EditProduct = () => {
               )}
             />
             {errors.categories && <p className="text-red-500">{errors.categories.message}</p>}
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Controller
+              name="published"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={mutation.isPending}
+                />
+              )}
+            />
+            <label htmlFor="published" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Published
+            </label>
           </div>
 
           <div className="flex flex-col gap-2">
