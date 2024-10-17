@@ -10,6 +10,9 @@ import AddProduct from "./pages/products/AddProduct";
 import AddOrder from "./pages/orders/AddOrder";
 import AddUser from "./pages/users/AddUser";
 import EditUser from "./pages/users/EditUser";
+import Auctions from "./pages/auctions/Auctions";
+import AddAuction from "./pages/auctions/AddAuction";
+import EditAuction from "./pages/auctions/EditAuction";
 
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import NotFound from "./pages/NotFound";
@@ -42,6 +45,10 @@ function App() {
         <Route path="/new-order" element={<AddOrder />} />
 
         <Route path="/settings" element={<Settings />} />
+
+        <Route path="/auctions" element={<Auctions />} />
+        <Route path="/new-auction" element={<AddAuction />} />
+        <Route path="/edit-auction/:id" element={<EditAuction />} />
 
       </Route>
 
