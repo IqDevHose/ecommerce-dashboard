@@ -20,6 +20,7 @@ const schema = z.object({
   startPrice: z.coerce.number().positive("Start price must be positive"),
   endPrice: z.coerce.number().positive("End price must be positive"),
   endTime: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/, "Invalid ISO date format"),
+  minPointsToSubscribe: z.coerce.number().min(0, "Minimum points must be non-negative"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -56,6 +57,7 @@ const EditAuction = () => {
         startPrice: auction.startPrice,
         endPrice: auction.endPrice,
         endTime: new Date(auction.endTime).toISOString(),
+        minPointsToSubscribe: auction.minPointsToSubscribe,
       });
     }
   }, [auction, reset]);
@@ -74,7 +76,8 @@ const EditAuction = () => {
       ...data,
       startPrice: Number(data.startPrice),
       endPrice: Number(data.endPrice),
-      endTime: new Date(data.endTime).toISOString(), // Convert Date to ISO string
+      endTime: new Date(data.endTime).toISOString(),
+      minPointsToSubscribe: Number(data.minPointsToSubscribe),
     };
     mutation.mutate(submissionData);
   };
@@ -167,6 +170,18 @@ const EditAuction = () => {
             )}
           />
           {errors.endTime && <p className="text-red-500">{errors.endTime.message}</p>}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="minPointsToSubscribe">Minimum Points to Subscribe</label>
+          <Controller
+            name="minPointsToSubscribe"
+            control={control}
+            render={({ field }) => (
+              <Input {...field} id="minPointsToSubscribe" type="number" disabled={mutation.isPending} className={`${errors.minPointsToSubscribe ? 'border-red-500' : ''}`} />
+            )}
+          />
+          {errors.minPointsToSubscribe && <p className="text-red-500">{errors.minPointsToSubscribe.message}</p>}
         </div>
 
         <div className="flex justify-between items-center">
