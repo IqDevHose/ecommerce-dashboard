@@ -19,6 +19,9 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import EditProduct from "./pages/products/EditProduct";
+import Categories from "./pages/categories/Categories";
+import AddCategory from "./pages/categories/AddCategory";
+import EditCategory from "./pages/categories/EditCategory";
 
 
 
@@ -49,6 +52,11 @@ function App() {
         <Route path="/auctions" element={<Auctions />} />
         <Route path="/new-auction" element={<AddAuction />} />
         <Route path="/edit-auction/:id" element={<EditAuction />} />
+
+        {/* New category routes */}
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/new-category" element={<AddCategory />} />
+        <Route path="/edit-category/:id" element={<EditCategory />} />
 
       </Route>
 

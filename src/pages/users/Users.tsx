@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { PencilIcon, PlusIcon, TrashIcon, UserIcon } from "lucide-react";
+import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 
 type User = {
   id: string;
