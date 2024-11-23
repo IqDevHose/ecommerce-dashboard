@@ -12,6 +12,7 @@ export default function SalesCard({ name, email, salesAmount, image }: SalesProp
             <AvatarFallback>{name.charAt(0)}</AvatarFallback>
           )}
         </Avatar>
+        
 
 
         {/* Name and Email */}
