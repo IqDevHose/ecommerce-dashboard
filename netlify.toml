@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/*"
+  to = "http://o4gk0ow0cko00scwkcs0wcog.91.92.136.18.sslip.io/:splat"
+  status = 200
+  force = true
